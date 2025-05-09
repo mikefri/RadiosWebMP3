@@ -99,7 +99,7 @@
         });
 
         // Fonction pour jouer une chanson spécifique
-        function playSong(index) {
+        window.playSong = function(index) {
           audioPlayer.src = songUrls[index];
           audioPlayer.play();
         }
