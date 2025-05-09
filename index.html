@@ -1,39 +1,39 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Musique via Proxy</title>
-  <style>
-    body { background: #111; color: #eee; font-family: sans-serif; text-align: center; }
-    .track { margin: 1rem; }
-    audio { width: 80%; max-width: 500px; margin-top: 0.5rem; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Radio</title>
 </head>
 <body>
-  <h1>🎵 Musique du NAS via Proxy</h1>
-  <div id="tracks">Chargement...</div>
 
-  <script>
-    const proxyURL = "https://radioswebmp3.synology.me:5001/radiowebmp3"; // modifie selon ton domaine
+    <div id="songs-list">
+        <!-- Les chansons seront affichées ici -->
+    </div>
 
-    fetch(`${proxyURL}/songs.php`)
-      .then(res => res.json())
-      .then(songs => {
-        const container = document.getElementById("tracks");
-        container.innerHTML = "";
-        songs.forEach(song => {
-          const div = document.createElement("div");
-          div.className = "track";
-          div.innerHTML = `
-            <p>${song.title} - ${song.additional?.song_artist?.name || "Artiste inconnu"}</p>
-            <audio controls src="${proxyURL}/stream.php?id=${encodeURIComponent(song.id)}"></audio>
-          `;
-          container.appendChild(div);
-        });
-      })
-      .catch(err => {
-        document.getElementById("tracks").innerText = "Erreur : " + err.message;
-      });
-  </script>
+    <script>
+        // Récupérer les chansons depuis le script PHP
+        fetch('https://radioswebmp3.synology.me/songs.php')
+            .then(response => response.json())
+            .then(data => {
+                const songsList = document.getElementById('songs-list');
+                // Vérifier si des chansons ont été retournées
+                if (data && Array.isArray(data)) {
+                    data.forEach(song => {
+                        const songElement = document.createElement('div');
+                        songElement.innerHTML = `
+                            <p><strong>${song.title}</strong> par ${song.artist}</p>
+                        `;
+                        songsList.appendChild(songElement);
+                    });
+                } else {
+                    songsList.innerHTML = '<p>Aucune chanson trouvée.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération des chansons:', error);
+            });
+    </script>
+
 </body>
 </html>
