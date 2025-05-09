@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎧 Mas Web Radio</title>
+  <title>🎧 Ma Web Radio</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -69,7 +69,7 @@
 
         // Liste pour stocker les URLs des chansons
         const songUrls = songs.map(song => song.url);
-        
+
         // Créer le lecteur audio
         const audioPlayer = document.createElement("audio");
         audioPlayer.controls = true;
@@ -100,8 +100,12 @@
 
         // Fonction pour jouer une chanson spécifique
         window.playSong = function(index) {
-          audioPlayer.src = songUrls[index];
-          audioPlayer.play();
+          const audio = document.querySelector("audio");
+          audio.src = songUrls[index];
+          audio.play().catch(error => {
+            console.error("Erreur de lecture de la chanson :", error);
+            alert("Impossible de lire cette chanson.");
+          });
         }
       })
       .catch(err => {
