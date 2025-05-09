@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Radio</title>
+    <!-- Inclure Howler.js -->
+    <script src="https://cdn.jsdelivr.net/npm/howler"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -40,13 +42,7 @@
             color: #666;
         }
 
-        audio {
-            margin-top: 10px;
-            width: 100%;
-            border-radius: 8px;
-        }
-
-        .song button {
+        button {
             background-color: #007BFF;
             color: white;
             padding: 10px;
@@ -56,7 +52,7 @@
             font-size: 14px;
         }
 
-        .song button:hover {
+        button:hover {
             background-color: #0056b3;
         }
     </style>
@@ -74,25 +70,20 @@
             .then(response => response.json())
             .then(data => {
                 const songsList = document.getElementById('songs-list');
-                // Vérifier si des chansons ont été retournées
                 if (data && Array.isArray(data)) {
                     data.forEach(song => {
                         const songElement = document.createElement('div');
                         songElement.classList.add('song');
 
-                        // Assurer que l'URL est valide et pointe vers un fichier MP3
-                        const audioUrl = song.url; // Assure-toi que `song.url` est une URL valide
+                        const audioUrl = song.url; // URL de l'audio
+                        console.log("URL de la chanson: ", audioUrl);  // Vérification de l'URL
 
                         // Créer l'élément HTML pour chaque chanson
                         songElement.innerHTML = `
                             <p>${song.title}</p>
                             <p class="artist">par ${song.artist}</p>
-                            <audio controls>
-                                <source src="${audioUrl}" type="audio/mpeg">
-                                Votre navigateur ne prend pas en charge l'élément audio.
-                            </audio>
+                            <button onclick="playAudio('${audioUrl}')">Lire la chanson</button>
                         `;
-                        
                         songsList.appendChild(songElement);
                     });
                 } else {
@@ -102,6 +93,19 @@
             .catch(error => {
                 console.error('Erreur lors de la récupération des chansons:', error);
             });
+
+        // Fonction pour jouer le fichier audio avec Howler.js
+        function playAudio(url) {
+            const sound = new Howl({
+                src: [url], // URL de l'audio
+                html5: true, // Permet la lecture sur les appareils mobiles
+                autoplay: true, // Démarre la lecture immédiatement
+                loop: false, // Désactive la boucle
+                volume: 1.0 // Volume maximal
+            });
+
+            sound.play();
+        }
     </script>
 
 </body>
