@@ -2,68 +2,76 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>🎧 Mes Chansons - NAS Synology</title>
+  <title>🎧 Musique NAS Synology</title>
   <style>
     body {
-      font-family: sans-serif;
-      background: #f9f9f9;
+      font-family: "Segoe UI", sans-serif;
+      background: #f2f2f2;
+      margin: 0;
       padding: 2rem;
       max-width: 800px;
       margin: auto;
     }
-    h1 { text-align: center; color: #333; }
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #333;
+    }
     .track {
+      display: flex;
+      align-items: center;
       background: white;
       margin-bottom: 1rem;
       padding: 1rem;
       border-radius: 12px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      gap: 1rem;
     }
     .track img {
       width: 64px;
       height: 64px;
-      border-radius: 8px;
+      border-radius: 10px;
+      margin-right: 1rem;
       object-fit: cover;
     }
-    .track audio {
+    .track-info {
       flex: 1;
+    }
+    .track-info strong {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    audio {
+      width: 100%;
     }
   </style>
 </head>
 <body>
-  <h1>🎶 Playlist du NAS</h1>
-  <div id="playlist">Chargement...</div>
+  <h1>🎶 Mes chansons sur le NAS</h1>
+  <div id="playlist">Chargement en cours...</div>
 
   <script>
-    const playlistEl = document.getElementById('playlist');
-    const baseUrl = 'https://radioswebmp3.synology.me/music/'; // adapt if necessary
     const placeholderCover = 'https://via.placeholder.com/64?text=♪';
+    const playlistEl = document.getElementById('playlist');
 
     fetch('https://radioswebmp3.synology.me/songs.php')
       .then(res => res.json())
-      .then(files => {
+      .then(data => {
         playlistEl.innerHTML = '';
-        files.forEach(file => {
-          const fileName = file.split('/').pop();
-          const audioSrc = baseUrl + file;
-
+        data.forEach(({ title, url }) => {
           const track = document.createElement('div');
           track.className = 'track';
           track.innerHTML = `
             <img src="${placeholderCover}" alt="Cover">
-            <div>
-              <strong>${fileName}</strong><br>
-              <audio controls src="${audioSrc}"></audio>
+            <div class="track-info">
+              <strong>${title}</strong>
+              <audio controls src="${url}"></audio>
             </div>
           `;
           playlistEl.appendChild(track);
         });
       })
       .catch(err => {
-        playlistEl.innerHTML = '<p>Erreur de chargement de la playlist.</p>';
+        playlistEl.innerHTML = '<p>Erreur de chargement des morceaux.</p>';
         console.error(err);
       });
   </script>
