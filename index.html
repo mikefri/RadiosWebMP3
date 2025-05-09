@@ -1,124 +1,71 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎧 Ma Web Radio</title>
+  <meta charset="UTF-8">
+  <title>🎧 Mes Chansons - NAS Synology</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #121212;
-      color: white;
-      margin: 0;
+      font-family: sans-serif;
+      background: #f9f9f9;
       padding: 2rem;
+      max-width: 800px;
+      margin: auto;
     }
-
-    h1 {
-      color: #1DB954;
-      margin-bottom: 2rem;
-    }
-
-    .song {
-      background: #1e1e1e;
-      border-radius: 10px;
+    h1 { text-align: center; color: #333; }
+    .track {
+      background: white;
+      margin-bottom: 1rem;
       padding: 1rem;
-      margin-bottom: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
     }
-
-    .song-title {
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
+    .track img {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      object-fit: cover;
     }
-
-    audio {
-      width: 100%;
-      margin-top: 0.5rem;
-    }
-
-    @media (min-width: 600px) {
-      .song {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .song-title {
-        margin-bottom: 0;
-      }
+    .track audio {
+      flex: 1;
     }
   </style>
 </head>
 <body>
-
-  <h1>🎶 Ma Web Radio</h1>
-  <div id="songs-list">Chargement...</div>
+  <h1>🎶 Playlist du NAS</h1>
+  <div id="playlist">Chargement...</div>
 
   <script>
-    // Fonction pour charger les chansons
-    fetch("https://radioswebmp3.synology.me/songs.php")
+    const playlistEl = document.getElementById('playlist');
+    const baseUrl = 'https://radioswebmp3.synology.me/music/'; // adapt if necessary
+    const placeholderCover = 'https://via.placeholder.com/64?text=♪';
+
+    fetch('https://radioswebmp3.synology.me/songs.php')
       .then(res => res.json())
-      .then(songs => {
-        const list = document.getElementById("songs-list");
-        list.innerHTML = "";
+      .then(files => {
+        playlistEl.innerHTML = '';
+        files.forEach(file => {
+          const fileName = file.split('/').pop();
+          const audioSrc = baseUrl + file;
 
-        if (songs.length === 0) {
-          list.innerHTML = "<p>Aucune chanson disponible.</p>";
-          return;
-        }
-
-        // Liste pour stocker les URLs des chansons
-        const songUrls = songs.map(song => song.url);
-        console.log("Liste des chansons : ", songUrls);  // Affiche les URLs des chansons pour déboguer
-
-        // Créer le lecteur audio
-        const audioPlayer = document.createElement("audio");
-        audioPlayer.controls = true;
-        audioPlayer.src = songUrls[0]; // Commencer par la première chanson
-
-        audioPlayer.addEventListener('ended', () => {
-          // Lorsque la chanson est terminée, passer à la suivante
-          const currentIndex = songUrls.indexOf(audioPlayer.src);
-          const nextIndex = (currentIndex + 1) % songUrls.length;
-          audioPlayer.src = songUrls[nextIndex];
-          audioPlayer.play().catch(error => {
-            console.error("Erreur de lecture de la chanson :", error);
-            alert("Impossible de lire cette chanson.");
-          });
-        });
-
-        // Ajouter le lecteur à la page
-        list.appendChild(audioPlayer);
-
-        // Afficher la liste des chansons avec un bouton pour les écouter
-        songs.forEach((song, index) => {
-          const container = document.createElement("div");
-          container.className = "song";
-
-          container.innerHTML = `
-            <div class="song-title">${song.title}</div>
-            <button onclick="playSong(${index})">Jouer</button>
+          const track = document.createElement('div');
+          track.className = 'track';
+          track.innerHTML = `
+            <img src="${placeholderCover}" alt="Cover">
+            <div>
+              <strong>${fileName}</strong><br>
+              <audio controls src="${audioSrc}"></audio>
+            </div>
           `;
-
-          list.appendChild(container);
+          playlistEl.appendChild(track);
         });
-
-        // Fonction pour jouer une chanson spécifique
-        window.playSong = function(index) {
-          const audio = document.querySelector("audio");
-          console.log("Chanson en cours : ", songUrls[index]);  // Affiche l'URL pour déboguer
-          audio.src = songUrls[index];
-          audio.play().catch(error => {
-            console.error("Erreur de lecture de la chanson :", error);
-            alert("Impossible de lire cette chanson.");
-          });
-        }
       })
       .catch(err => {
-        console.error("Erreur lors du chargement des chansons :", err);
-        document.getElementById("songs-list").innerHTML = "<p>Erreur de chargement.</p>";
+        playlistEl.innerHTML = '<p>Erreur de chargement de la playlist.</p>';
+        console.error(err);
       });
   </script>
-
 </body>
 </html>
