@@ -1,79 +1,69 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>🎧 Musique NAS Synology</title>
-  <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background: #f2f2f2;
-      margin: 0;
-      padding: 2rem;
-      max-width: 800px;
-      margin: auto;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 2rem;
-      color: #333;
-    }
-    .track {
-      display: flex;
-      align-items: center;
-      background: white;
-      margin-bottom: 1rem;
-      padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .track img {
-      width: 64px;
-      height: 64px;
-      border-radius: 10px;
-      margin-right: 1rem;
-      object-fit: cover;
-    }
-    .track-info {
-      flex: 1;
-    }
-    .track-info strong {
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    audio {
-      width: 100%;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecteur Audio Google Drive</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .audio-container {
+            margin-top: 20px;
+        }
+        audio {
+            margin: 10px;
+        }
+    </style>
 </head>
 <body>
-  <h1>🎶 Mes chansons sur le NAS</h1>
-  <div id="playlist">Chargement en cours...</div>
+    <h1>Lecteur Audio Google Drive</h1>
+    <div id="audio-list" class="audio-container"></div>
 
-  <script>
-    const placeholderCover = 'https://via.placeholder.com/64?text=♪';
-    const playlistEl = document.getElementById('playlist');
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        // ID de ton dossier Google Drive
+        const folderId = '11n9RVF-ZjTBOLMvoYB7asAs4A8hUfeYu'; 
 
-    fetch('https://radioswebmp3.synology.me/songs.php')
-      .then(res => res.json())
-      .then(data => {
-        playlistEl.innerHTML = '';
-        data.forEach(({ title, url }) => {
-          const track = document.createElement('div');
-          track.className = 'track';
-          track.innerHTML = `
-            <img src="${placeholderCover}" alt="Cover">
-            <div class="track-info">
-              <strong>${title}</strong>
-              <audio controls src="${url}"></audio>
-            </div>
-          `;
-          playlistEl.appendChild(track);
-        });
-      })
-      .catch(err => {
-        playlistEl.innerHTML = '<p>Erreur de chargement des morceaux.</p>';
-        console.error(err);
-      });
-  </script>
+        // Ta clé API Google
+        const apiKey = 'AIzaSyCFIShJe5FjUrK00QAq7zGxHhXLuTbKxZA';
+
+        function init() {
+            gapi.client.init({
+                apiKey: apiKey,
+            }).then(() => {
+                listFiles(folderId);
+            });
+        }
+
+        function listFiles(folderId) {
+            gapi.client.drive.files.list({
+                q: `'${folderId}' in parents`,
+                fields: 'files(id, name, mimeType)',
+            }).then((response) => {
+                const files = response.result.files;
+                if (files && files.length > 0) {
+                    files.forEach(file => {
+                        if (file.mimeType === 'audio/mpeg') {  // Vérifie que c'est un fichier audio
+                            const audioElement = document.createElement('div');
+                            audioElement.innerHTML = `
+                                <h2>${file.name}</h2>
+                                <audio controls>
+                                    <source src="https://drive.google.com/uc?export=download&id=${file.id}" type="audio/mp3">
+                                    Votre navigateur ne prend pas en charge la balise audio.
+                                </audio>
+                            `;
+                            document.getElementById('audio-list').appendChild(audioElement);
+                        }
+                    });
+                } else {
+                    console.log('Aucun fichier audio trouvé dans le dossier.');
+                }
+            });
+        }
+
+        gapi.load('client', init);
+    </script>
 </body>
 </html>
