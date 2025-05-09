@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://www.gstatic.com; object-src 'none';">
+  <!-- Mise à jour de la politique CSP pour autoriser les scripts externes et inline -->
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://www.gstatic.com https://accounts.google.com 'unsafe-inline'; object-src 'none';">
   <title>Lecteur audio depuis Google Drive</title>
 </head>
 <body>
@@ -28,7 +29,6 @@
   <script>
     // Initialiser Google Identity Services (GIS) après le chargement du script
     window.onload = function() {
-      console.log('Initialisation du bouton de connexion Google');
       google.accounts.id.initialize({
         client_id: '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com',
         callback: handleCredentialResponse
@@ -38,14 +38,12 @@
         document.getElementById("g_id_signin"),
         { theme: "outline", size: "large" }
       );
-      console.log('Bouton de connexion Google rendu');
     };
 
     // Cette fonction est appelée lorsque l'utilisateur se connecte avec Google
     function handleCredentialResponse(response) {
-      console.log("Réponse reçue du bouton de connexion Google:", response);
       const id_token = response.credential;
-      console.log("ID Token reçu:", id_token);
+      console.log("ID Token: " + id_token);
 
       // Utiliser le token pour accéder à l'API Google Drive
       authenticate(id_token).then(() => {
@@ -59,13 +57,10 @@
     // Authentification avec Google API en utilisant l'ID Token
     function authenticate(id_token) {
       return new Promise((resolve, reject) => {
-        console.log('Chargement de l\'API Google Client');
         gapi.load('client:auth2', function() {
-          console.log('API Google Client chargée');
           gapi.auth2.init({
             client_id: '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com'
           }).then(function() {
-            console.log('Authentification avec le token ID');
             gapi.auth2.getAuthInstance().signIn({
               id_token: id_token
             }).then(resolve, reject);
@@ -76,24 +71,19 @@
 
     // Lister les fichiers audio du dossier spécifique dans Google Drive
     function listFiles() {
-      console.log("Chargement de l'API Google Drive");
       gapi.client.load('drive', 'v3', function() {
-        console.log('API Google Drive chargée');
         gapi.client.drive.files.list({
           q: `'11n9RVF-ZjTBOLMvoYB7asAs4A8hUfeYu' in parents and mimeType contains 'audio' and trashed = false`,
           fields: 'files(id, name, mimeType)'
         }).then(response => {
-          console.log("Réponse de l'API Google Drive:", response);
+          console.log('Fichiers trouvés :', response.result.files);
           const files = response.result.files;
           if (!files || files.length === 0) {
-            console.log('Aucun fichier audio trouvé dans le dossier.');
             document.getElementById('audio-list').innerText = 'Aucun fichier trouvé.';
             return;
           }
 
-          console.log('Fichiers audio trouvés:', files);
           files.forEach(file => {
-            console.log('Création du lecteur pour le fichier:', file.name);
             const container = document.createElement('div');
             container.innerHTML = `
               <h3>${file.name}</h3>
