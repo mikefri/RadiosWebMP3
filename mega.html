@@ -48,24 +48,32 @@
 
     // Fonction pour lister les fichiers audio depuis MEGA
     function listAudioFiles() {
-      // Spécifier le dossier MEGA où se trouvent les fichiers audio (si nécessaire)
-      const folderLink = 'lien_vers_le_dossier_mega'; // Remplace avec le lien vers ton dossier MEGA
+      // Spécifier le dossier MEGA où se trouvent les fichiers audio (remplace par ton lien MEGA)
+      const folderLink = 'lien_vers_le_dossier_mega';  // Remplace par le lien vers ton dossier MEGA
 
-      megaClient.download(folderLink, function(files) {
+      megaClient.readdir(folderLink, function(err, files) {
         const audioListContainer = document.getElementById('audio-list');
         
         // Si des fichiers sont trouvés
+        if (err) {
+          console.error('Erreur lors de la lecture du dossier:', err);
+          audioListContainer.innerHTML = 'Erreur de récupération des fichiers.';
+          return;
+        }
+
         if (files.length > 0) {
           files.forEach((file) => {
-            const fileDiv = document.createElement('div');
-            fileDiv.innerHTML = `
-              <h3>${file.name}</h3>
-              <audio controls>
-                <source src="${file.url}" type="${file.mime}">
-                Votre navigateur ne supporte pas l'audio.
-              </audio>
-            `;
-            audioListContainer.appendChild(fileDiv);
+            if (file.name.endsWith('.mp3') || file.name.endsWith('.wav') || file.name.endsWith('.ogg')) {
+              const fileDiv = document.createElement('div');
+              fileDiv.innerHTML = `
+                <h3>${file.name}</h3>
+                <audio controls>
+                  <source src="${file.url}" type="${file.mime}">
+                  Votre navigateur ne supporte pas l'audio.
+                </audio>
+              `;
+              audioListContainer.appendChild(fileDiv);
+            }
           });
         } else {
           audioListContainer.innerHTML = 'Aucun fichier audio trouvé dans ce dossier.';
