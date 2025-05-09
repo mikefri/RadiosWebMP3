@@ -2,14 +2,16 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Lecteur audio depuis Google Drives</title>
+  <title>Lecteur audio depuis Google Drive</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-  <h1>Lecteur audio depuis Google Drives</h1>
+  <h1>Lecteur audio depuis Google Drive</h1>
+  
+  <!-- Le bouton de connexion -->
   <div id="g_id_onload"
-       data-client_id="702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com" 
-       data-callback="handleCredentialResponse" 
+       data-client_id="702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com"
+       data-callback="handleCredentialResponse"
        data-auto_prompt="false">
   </div>
   
@@ -17,9 +19,9 @@
 
   <script src="https://apis.google.com/js/api.js"></script>
   <script>
-    const CLIENT_ID = '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com'; // Remplace par ton ID client
-    const API_KEY = 'AIzaSyCFIShJe5FjUrK00QAq7zGxHhXLuTbKxZA'; // Remplace par ta clé API
-    const FOLDER_ID = '11n9RVF-ZjTBOLMvoYB7asAs4A8hUfeYu'; // Remplace par l'ID de ton dossier Google Drive
+    const CLIENT_ID = '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com'; 
+    const API_KEY = 'AIzaSyCFIShJe5FjUrK00QAq7zGxHhXLuTbKxZA';
+    const FOLDER_ID = '11n9RVF-ZjTBOLMvoYB7asAs4A8hUfeYu';
     const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
 
     let authToken = null;
