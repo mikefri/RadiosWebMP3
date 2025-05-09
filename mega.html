@@ -48,8 +48,8 @@
 
     // Fonction pour lister les fichiers audio depuis MEGA
     function listAudioFiles() {
-      // Spécifier le dossier MEGA où se trouvent les fichiers audio (remplace par ton lien MEGA)
-      const folderLink = 'CNdw0RQY#lmoLlrBYvpnkehG9RPBK7w';  // Remplace par le lien vers ton dossier MEGA
+      // Utilise uniquement l'ID du dossier
+      const folderLink = 'CNdw0RQY#lmoLlrBYvpnkehG9RPBK7w';  // Remplace par l'ID du dossier MEGA
 
       megaClient.readdir(folderLink, function(err, files) {
         const audioListContainer = document.getElementById('audio-list');
