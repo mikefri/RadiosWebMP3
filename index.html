@@ -55,6 +55,7 @@
   <div id="songs-list">Chargement...</div>
 
   <script>
+    // Fonction pour charger les chansons
     fetch("https://radioswebmp3.synology.me/songs.php")
       .then(res => res.json())
       .then(songs => {
@@ -66,17 +67,42 @@
           return;
         }
 
-        songs.forEach(song => {
+        // Liste pour stocker les URLs des chansons
+        const songUrls = songs.map(song => song.url);
+        
+        // Créer le lecteur audio
+        const audioPlayer = document.createElement("audio");
+        audioPlayer.controls = true;
+        audioPlayer.src = songUrls[0]; // Commencer par la première chanson
+        audioPlayer.addEventListener('ended', () => {
+          // Lorsque la chanson est terminée, passer à la suivante
+          const currentIndex = songUrls.indexOf(audioPlayer.src);
+          const nextIndex = (currentIndex + 1) % songUrls.length;
+          audioPlayer.src = songUrls[nextIndex];
+          audioPlayer.play();
+        });
+
+        // Ajouter le lecteur à la page
+        list.appendChild(audioPlayer);
+
+        // Afficher la liste des chansons avec un bouton pour les écouter
+        songs.forEach((song, index) => {
           const container = document.createElement("div");
           container.className = "song";
 
           container.innerHTML = `
             <div class="song-title">${song.title}</div>
-            <audio controls src="${song.url}"></audio>
+            <button onclick="playSong(${index})">Jouer</button>
           `;
 
           list.appendChild(container);
         });
+
+        // Fonction pour jouer une chanson spécifique
+        function playSong(index) {
+          audioPlayer.src = songUrls[index];
+          audioPlayer.play();
+        }
       })
       .catch(err => {
         console.error("Erreur lors du chargement des chansons :", err);
