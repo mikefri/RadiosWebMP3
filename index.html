@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Audio Station - Démo API</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #eee; text-align: center; }
+    .track { margin: 1rem 0; }
+    audio { width: 80%; max-width: 500px; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>🎵 Musique depuis mon NAS</h1>
+  <div id="tracks">Connexion en cours...</div>
+
+  <script>
+    const nasURL = "https://monnas.synology.me:5001"; // Modifie ici
+    const user = "TON_USER";
+    const pass = "TON_MOT_DE_PASSE";
+
+    async function login() {
+      const url = `${nasURL}/webapi/auth.cgi?api=SYNO.API.Auth&version=6&method=login&account=${user}&passwd=${pass}&session=AudioStation&format=sid`;
+      const res = await fetch(url, { credentials: 'include' });
+      const data = await res.json();
+      if (data.success) {
+        return data.data.sid;
+      } else {
+        throw new Error("Échec de connexion");
+      }
+    }
+
+    async function getSongs(sid) {
+      const url = `${nasURL}/webapi/AudioStation/song.cgi?api=SYNO.AudioStation.Song&version=3&method=list&library=all&limit=5&_sid=${sid}`;
+      const res = await fetch(url, { credentials: 'include' });
+      const data = await res.json();
+      if (data.success) {
+        return data.data.songs;
+      } else {
+        throw new Error("Impossible de récupérer les chansons");
+      }
+    }
+
+    async function main() {
+      const container = document.getElementById('tracks');
+      try {
+        const sid = await login();
+        const songs = await getSongs(sid);
+        container.innerHTML = '';
+        songs.forEach(song => {
+          const div = document.createElement('div');
+          div.className = 'track';
+          div.innerHTML = `
+            <p>${song.title} - ${song.additional?.song_artist?.name || "Inconnu"}</p>
+            <audio controls src="${nasURL}/webapi/AudioStation/stream.cgi?api=SYNO.AudioStation.Stream&version=2&method=stream&id=${song.id}&_sid=${sid}"></audio>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        container.innerHTML = `<p>❌ ${err.message}</p>`;
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>
