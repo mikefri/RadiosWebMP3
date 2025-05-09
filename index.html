@@ -1,91 +1,102 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://www.gstatic.com; object-src 'none';">
   <title>Lecteur audio depuis Google Drive</title>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
   <h1>Lecteur audio depuis Google Drive</h1>
-  
-  <!-- Le bouton de connexion -->
+
+  <!-- Bouton de connexion Google -->
   <div id="g_id_onload"
        data-client_id="702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com"
-       data-callback="handleCredentialResponse"
-       data-auto_prompt="false">
-  </div>
-  
+       data-login_uri="https://mikefri.github.io/RadiosWebMP3"
+       data-auto_select="true"
+       data-itp_support="true"></div>
+
+  <div id="g_id_signin"
+       data-type="standard"
+       data-shape="pill"
+       data-theme="outline"
+       data-text="signin_with"
+       data-size="large"></div>
+
   <div id="audio-list"></div>
 
-  <script src="https://apis.google.com/js/api.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
   <script>
-    const CLIENT_ID = '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com'; 
-    const API_KEY = 'AIzaSyCFIShJe5FjUrK00QAq7zGxHhXLuTbKxZA';
-    const FOLDER_ID = '11n9RVF-ZjTBOLMvoYB7asAs4A8hUfeYu';
-    const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
+    // Initialiser Google Identity Services (GIS) après le chargement du script
+    window.onload = function() {
+      google.accounts.id.initialize({
+        client_id: '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com',
+        callback: handleCredentialResponse
+      });
 
-    let authToken = null;
+      google.accounts.id.renderButton(
+        document.getElementById("g_id_signin"),
+        { theme: "outline", size: "large" }
+      );
+    };
 
-    // Fonction appelée lors du retour de la connexion via Google Identity Services
+    // Cette fonction est appelée lorsque l'utilisateur se connecte avec Google
     function handleCredentialResponse(response) {
-      console.log("ID Token: " + response.credential);
-      authToken = response.credential;
-      listFiles();
+      const id_token = response.credential;
+      console.log("ID Token: " + id_token);
+
+      // Utiliser le token pour accéder à l'API Google Drive
+      authenticate(id_token).then(() => {
+        listFiles();
+      }).catch(err => {
+        console.error("Erreur d'authentification:", err);
+      });
     }
 
-    // Fonction pour lister les fichiers audio depuis Google Drive
-    function listFiles() {
-      gapi.client.drive.files.list({
-        q: `'${FOLDER_ID}' in parents and mimeType contains 'audio' and trashed = false`,
-        fields: 'files(id, name, mimeType)',
-        headers: {
-          Authorization: `Bearer ${authToken}`
-        }
-      }).then(response => {
-        const files = response.result.files;
-        const audioListContainer = document.getElementById('audio-list');
-        
-        if (!files || files.length === 0) {
-          audioListContainer.innerHTML = 'Aucun fichier trouvé.';
-          return;
-        }
-
-        files.forEach(file => {
-          const container = document.createElement('div');
-          container.innerHTML = `
-            <h3>${file.name}</h3>
-            <audio controls>
-              <source src="https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}" type="${file.mimeType}">
-              Votre navigateur ne supporte pas l'audio.
-            </audio>
-          `;
-          audioListContainer.appendChild(container);
+    // Authentification avec Google API en utilisant l'ID Token
+    function authenticate(id_token) {
+      return new Promise((resolve, reject) => {
+        gapi.load('client:auth2', function() {
+          gapi.auth2.init({
+            client_id: '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com'
+          }).then(function() {
+            gapi.auth2.getAuthInstance().signIn({
+              id_token: id_token
+            }).then(resolve, reject);
+          });
         });
-      }, err => {
-        console.error('Erreur API:', err);
       });
     }
 
-    // Fonction de chargement du client Google API
-    function handleClientLoad() {
-      gapi.load('client:auth2', initClient);
-    }
+    // Lister les fichiers audio du dossier spécifique dans Google Drive
+    function listFiles() {
+      gapi.client.load('drive', 'v3', function() {
+        gapi.client.drive.files.list({
+          q: `'11n9RVF-ZjTBOLMvoYB7asAs4A8hUfeYu' in parents and mimeType contains 'audio' and trashed = false`,
+          fields: 'files(id, name, mimeType)'
+        }).then(response => {
+          const files = response.result.files;
+          if (!files || files.length === 0) {
+            document.getElementById('audio-list').innerText = 'Aucun fichier trouvé.';
+            return;
+          }
 
-    // Initialisation du client Google API avec la clé API
-    function initClient() {
-      gapi.client.init({
-        apiKey: API_KEY,
-        clientId: CLIENT_ID,
-        scope: SCOPES
-      }).then(() => {
-        console.log('API init');
+          files.forEach(file => {
+            const container = document.createElement('div');
+            container.innerHTML = `
+              <h3>${file.name}</h3>
+              <audio controls>
+                <source src="https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=AIzaSyCFIShJe5FjUrK00QAq7zGxHhXLuTbKxZA" type="${file.mimeType}">
+                Votre navigateur ne supporte pas l'audio.
+              </audio>
+            `;
+            document.getElementById('audio-list').appendChild(container);
+          });
+        }).catch(err => {
+          console.error('Erreur API:', err);
+        });
       });
     }
-
-    // Chargement du client Google API
-    document.addEventListener('DOMContentLoaded', function () {
-      handleClientLoad();
-    });
   </script>
 </body>
 </html>
