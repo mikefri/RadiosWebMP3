@@ -1,19 +1,93 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Mes Musiques Synology</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecture MP3 depuis NAS Synology</title>
   <style>
-    body { font-family: sans-serif; padding: 2em; background: #111; color: #eee; }
-    li { margin: 10px 0; }
-    button { margin-left: 1em; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #222;
+      color: #fff;
+    }
+    #player {
+      margin-top: 20px;
+    }
+    #music-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      margin: 10px 0;
+    }
+    button {
+      background-color: #1e7e34;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #155d2e;
+    }
   </style>
 </head>
 <body>
-  <h1>🎵 Ma Musique Synology</h1>
-  <ul id="song-list">Chargement...</ul>
-  <audio id="player" controls style="width: 100%; margin-top: 2em;"></audio>
 
-  <script src="script.js"></script>
+  <h1>Liste de Musiques sur mon NAS</h1>
+
+  <ul id="music-list">
+    <!-- La liste des fichiers MP3 sera insérée ici -->
+  </ul>
+
+  <div id="player">
+    <audio id="audio-player" controls>
+      <source src="" id="audio-source" type="audio/mp3">
+      Ton navigateur ne supporte pas l'élément audio.
+    </audio>
+  </div>
+
+  <script>
+    const apiUrl = "https://radioswebmp3.synology.me/webapi/AudioStation/music.cgi";
+    const session = "AudioStation"; // Nom de la session pour l'authentification
+
+    // Fonction pour récupérer la liste des MP3
+    async function fetchMusicList() {
+      const response = await fetch(`${apiUrl}?api=SYNO.AudioStation.Music&version=2&method=list&folder_path=/music&session=${session}`);
+      const data = await response.json();
+      if (data.success) {
+        displayMusicList(data.data.files);
+      }
+    }
+
+    // Fonction pour afficher la liste des fichiers MP3
+    function displayMusicList(files) {
+      const musicList = document.getElementById('music-list');
+      musicList.innerHTML = ''; // Réinitialise la liste
+      files.forEach(file => {
+        if (file.type === 'file' && file.name.endsWith('.mp3')) {
+          const listItem = document.createElement('li');
+          const playButton = document.createElement('button');
+          playButton.textContent = `Lire ${file.name}`;
+          playButton.onclick = () => playMusic(file.path);
+          listItem.appendChild(playButton);
+          musicList.appendChild(listItem);
+        }
+      });
+    }
+
+    // Fonction pour lire un fichier MP3
+    function playMusic(filePath) {
+      const player = document.getElementById('audio-player');
+      const audioSource = document.getElementById('audio-source');
+      audioSource.src = `https://radioswebmp3.synology.me/music/${filePath}`;
+      player.load();  // Recharge l'audio avec la nouvelle source
+      player.play();
+    }
+
+    // Lancer la récupération des fichiers MP3 au chargement de la page
+    fetchMusicList();
+  </script>
+
 </body>
 </html>
