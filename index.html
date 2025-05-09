@@ -96,16 +96,30 @@
 
         // Fonction pour jouer le fichier audio avec Howler.js
         function playAudio(url) {
-            const sound = new Howl({
-                src: [url], // URL de l'audio
-                html5: true, // Permet la lecture sur les appareils mobiles
-                autoplay: true, // Démarre la lecture immédiatement
-                loop: false, // Désactive la boucle
-                volume: 1.0 // Volume maximal
-            });
+    console.log("URL de la chanson: ", url);  // Vérifier si l'URL est correcte
 
-            sound.play();
+    const sound = new Howl({
+        src: [url], // URL du fichier audio
+        html5: true, // Permet la lecture sur mobile
+        autoplay: true, // Démarre la lecture immédiatement
+        loop: false, // Ne pas boucler
+        volume: 1.0, // Volume maximal
+        onplayerror: function() {
+            console.log("Erreur de lecture de la chanson");
         }
+    });
+
+    sound.play();
+
+    // Vérification de l'état de lecture
+    sound.on('play', function() {
+        console.log("Lecture commencée");
+    });
+
+    sound.on('loaderror', function() {
+        console.log("Erreur lors du chargement de la chanson");
+    });
+}
     </script>
 
 </body>
