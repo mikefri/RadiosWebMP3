@@ -2,17 +2,17 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Lecteur audio Drives</title>
+  <title>Lecteur audio Drive</title>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com; style-src 'self'; img-src 'self' https://lh3.googleusercontent.com;">
 </head>
 <body>
-  <h1>Lecteur audio depuis Google Drives</h1>
+  <h1>Lecteur audio depuis Google Drive</h1>
   <button id="authButton">Se connecter</button>
   <div id="audio-list"></div>
 
   <script src="https://apis.google.com/js/api.js"></script>
   <script>
-    const CLIENT_ID = '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com'; // à remplacer si besoin
+    const CLIENT_ID = '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com';
     const API_KEY = 'AIzaSyCFIShJe5FjUrK00QAq7zGxHhXLuTbKxZA';
     const FOLDER_ID = '11n9RVF-ZjTBOLMvoYB7asAs4A8hUfeYu';
     const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
@@ -65,7 +65,10 @@
     }
 
     // Lier l'événement "click" du bouton à la fonction handleAuthClick
-    document.getElementById('authButton').addEventListener('click', handleAuthClick);
+    document.addEventListener('DOMContentLoaded', function () {
+      const authButton = document.getElementById('authButton');
+      authButton.addEventListener('click', handleAuthClick);
+    });
 
     handleClientLoad();
   </script>
