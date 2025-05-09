@@ -1,126 +1,88 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Radio</title>
-    <!-- Inclure Howler.js -->
-    <script src="https://cdn.jsdelivr.net/npm/howler"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎧 Ma Web Radio</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #121212;
+      color: white;
+      margin: 0;
+      padding: 2rem;
+    }
 
-        #songs-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+    h1 {
+      color: #1DB954;
+      margin-bottom: 2rem;
+    }
 
-        .song {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+    .song {
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
 
-        .song p {
-            margin: 0;
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-        }
+    .song-title {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
 
-        .song .artist {
-            font-size: 16px;
-            color: #666;
-        }
+    audio {
+      width: 100%;
+      margin-top: 0.5rem;
+    }
 
-        button {
-            background-color: #007BFF;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    @media (min-width: 600px) {
+      .song {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .song-title {
+        margin-bottom: 0;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <h1>Liste des Chansons</h1>
-    <div id="songs-list">
-        <!-- Les chansons seront affichées ici -->
-    </div>
+  <h1>🎶 Ma Web Radio</h1>
+  <div id="songs-list">Chargement...</div>
 
-    <script>
-        // Récupérer les chansons depuis le script PHP
-        fetch('https://radioswebmp3.synology.me/songs.php')
-            .then(response => response.json())
-            .then(data => {
-                const songsList = document.getElementById('songs-list');
-                if (data && Array.isArray(data)) {
-                    data.forEach(song => {
-                        const songElement = document.createElement('div');
-                        songElement.classList.add('song');
+  <script>
+    fetch("https://radioswebmp3.synology.me/songs.php")
+      .then(res => res.json())
+      .then(songs => {
+        const list = document.getElementById("songs-list");
+        list.innerHTML = "";
 
-                        const audioUrl = song.url; // URL de l'audio
-                        console.log("URL de la chanson: ", audioUrl);  // Vérification de l'URL
-
-                        // Créer l'élément HTML pour chaque chanson
-                        songElement.innerHTML = `
-                            <p>${song.title}</p>
-                            <p class="artist">par ${song.artist}</p>
-                            <button onclick="playAudio('${audioUrl}')">Lire la chanson</button>
-                        `;
-                        songsList.appendChild(songElement);
-                    });
-                } else {
-                    songsList.innerHTML = '<p>Aucune chanson trouvée.</p>';
-                }
-            })
-            .catch(error => {
-                console.error('Erreur lors de la récupération des chansons:', error);
-            });
-
-        // Fonction pour jouer le fichier audio avec Howler.js
-        function playAudio(url) {
-    console.log("URL de la chanson: ", url);  // Vérifier si l'URL est correcte
-
-    const sound = new Howl({
-        src: [url], // URL du fichier audio
-        html5: true, // Permet la lecture sur mobile
-        autoplay: true, // Démarre la lecture immédiatement
-        loop: false, // Ne pas boucler
-        volume: 1.0, // Volume maximal
-        onplayerror: function() {
-            console.log("Erreur de lecture de la chanson");
+        if (songs.length === 0) {
+          list.innerHTML = "<p>Aucune chanson disponible.</p>";
+          return;
         }
-    });
 
-    sound.play();
+        songs.forEach(song => {
+          const container = document.createElement("div");
+          container.className = "song";
 
-    // Vérification de l'état de lecture
-    sound.on('play', function() {
-        console.log("Lecture commencée");
-    });
+          container.innerHTML = `
+            <div class="song-title">${song.title}</div>
+            <audio controls src="${song.url}"></audio>
+          `;
 
-    sound.on('loaderror', function() {
-        console.log("Erreur lors du chargement de la chanson");
-    });
-}
-    </script>
+          list.appendChild(container);
+        });
+      })
+      .catch(err => {
+        console.error("Erreur lors du chargement des chansons :", err);
+        document.getElementById("songs-list").innerHTML = "<p>Erreur de chargement.</p>";
+      });
+  </script>
 
 </body>
 </html>
