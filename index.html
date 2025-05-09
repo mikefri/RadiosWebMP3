@@ -2,14 +2,12 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <!-- Mise à jour de la politique CSP pour autoriser les scripts externes et inline -->
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://www.gstatic.com https://accounts.google.com 'unsafe-inline'; object-src 'none';">
   <title>Lecteur audio depuis Google Drive</title>
 </head>
 <body>
   <h1>Lecteur audio depuis Google Drive</h1>
 
-  <!-- Bouton de connexion Google -->
   <div id="g_id_onload"
        data-client_id="702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com"
        data-auto_select="true"
@@ -24,28 +22,32 @@
 
   <div id="audio-list"></div>
 
+  <!-- Le script Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <script>
-    // Initialiser Google Identity Services (GIS) après le chargement du script
+    // Attendre que le script Google Identity soit chargé avant de l'utiliser
     window.onload = function() {
-      google.accounts.id.initialize({
-        client_id: '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com',
-        callback: handleCredentialResponse
-      });
+      if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+        google.accounts.id.initialize({
+          client_id: '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com',
+          callback: handleCredentialResponse
+        });
 
-      google.accounts.id.renderButton(
-        document.getElementById("g_id_signin"),
-        { theme: "outline", size: "large" }
-      );
+        google.accounts.id.renderButton(
+          document.getElementById("g_id_signin"),
+          { theme: "outline", size: "large" }
+        );
+      } else {
+        console.error("Le script Google Identity Services n'a pas pu être chargé.");
+      }
     };
 
-    // Cette fonction est appelée lorsque l'utilisateur se connecte avec Google
+    // Fonction de réponse de l'ID Token
     function handleCredentialResponse(response) {
       const id_token = response.credential;
       console.log("ID Token: " + id_token);
 
-      // Utiliser le token pour accéder à l'API Google Drive
       authenticate(id_token).then(() => {
         console.log('Authentification réussie');
         listFiles();
@@ -54,22 +56,27 @@
       });
     }
 
-    // Authentification avec Google API en utilisant l'ID Token
+    // Authentification avec Google API
     function authenticate(id_token) {
       return new Promise((resolve, reject) => {
-        gapi.load('client:auth2', function() {
-          gapi.auth2.init({
-            client_id: '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com'
-          }).then(function() {
-            gapi.auth2.getAuthInstance().signIn({
-              id_token: id_token
-            }).then(resolve, reject);
+        if (typeof gapi !== 'undefined') {
+          gapi.load('client:auth2', function() {
+            gapi.auth2.init({
+              client_id: '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com'
+            }).then(function() {
+              gapi.auth2.getAuthInstance().signIn({
+                id_token: id_token
+              }).then(resolve, reject);
+            });
           });
-        });
+        } else {
+          console.error("gapi n'est pas défini, vérifie le chargement du script.");
+          reject(new Error("gapi non disponible"));
+        }
       });
     }
 
-    // Lister les fichiers audio du dossier spécifique dans Google Drive
+    // Liste des fichiers audio sur Google Drive
     function listFiles() {
       gapi.client.load('drive', 'v3', function() {
         gapi.client.drive.files.list({
