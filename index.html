@@ -1,111 +1,132 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://www.gstatic.com https://accounts.google.com 'unsafe-inline'; object-src 'none';">
-  <title>Lecteur audio depuis Google Drive</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://apis.google.com https://accounts.google.com 'unsafe-inline'; object-src 'none';">
+    <title>Lecteur audio depuis Google Drive</title>
+    <style>
+        #audio-list div {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #error-message {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-  <h1>Lecteur audio depuis Google Drive</h1>
+    <h1>Lecteur audio depuis Google Drive</h1>
 
-  <div id="g_id_onload"
-       data-client_id="702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com"
-       data-auto_select="true"
-       data-itp_support="true"></div>
+    <div id="g_id_onload"
+         data-client_id="702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com" data-auto_select="false"
+         data-itp_support="true"
+         data-callback="handleCredentialResponse">
+    </div>
 
-  <div id="g_id_signin"
-       data-type="standard"
-       data-shape="pill"
-       data-theme="outline"
-       data-text="signin_with"
-       data-size="large"></div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="pill"
+         data-theme="outline"
+         data-text="signin_with"
+         data-size="large"
+         data-client_id="702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com"> </div>
 
-  <div id="audio-list"></div>
+    <div id="audio-list"></div>
+    <div id="error-message"></div>
 
-  <!-- Le script Google Identity Services -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script async defer src="https://apis.google.com/js/api.js"
+            onload="gapiLoaded"></script>
 
-  <script>
-    // Attendre que le script Google Identity soit chargé avant de l'utiliser
-    window.onload = function() {
-      if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-        google.accounts.id.initialize({
-          client_id: '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com',
-          callback: handleCredentialResponse
-        });
+    <script>
+        // Remplacez par l'ID de votre dossier "music" sur Google Drive
+        const MUSIC_FOLDER_ID = '11n9RVF-ZjTBOLMvoYB7asAs4A8hUfeYu';
 
-        google.accounts.id.renderButton(
-          document.getElementById("g_id_signin"),
-          { theme: "outline", size: "large" }
-        );
-      } else {
-        console.error("Le script Google Identity Services n'a pas pu être chargé.");
-      }
-    };
+        let googleAuth;
+        let isSignedIn = false;
 
-    // Fonction de réponse de l'ID Token
-    function handleCredentialResponse(response) {
-      const id_token = response.credential;
-      console.log("ID Token: " + id_token);
-
-      authenticate(id_token).then(() => {
-        console.log('Authentification réussie');
-        listFiles();
-      }).catch(err => {
-        console.error("Erreur d'authentification:", err);
-      });
-    }
-
-    // Authentification avec Google API
-    function authenticate(id_token) {
-      return new Promise((resolve, reject) => {
-        if (typeof gapi !== 'undefined') {
-          gapi.load('client:auth2', function() {
-            gapi.auth2.init({
-              client_id: '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com'
-            }).then(function() {
-              gapi.auth2.getAuthInstance().signIn({
-                id_token: id_token
-              }).then(resolve, reject);
-            });
-          });
-        } else {
-          console.error("gapi n'est pas défini, vérifie le chargement du script.");
-          reject(new Error("gapi non disponible"));
+        function gapiLoaded() {
+            gapi.load('client:auth2', initClient);
         }
-      });
-    }
 
-    // Liste des fichiers audio sur Google Drive
-    function listFiles() {
-      gapi.client.load('drive', 'v3', function() {
-        gapi.client.drive.files.list({
-          q: `'11n9RVF-ZjTBOLMvoYB7asAs4A8hUfeYu' in parents and mimeType contains 'audio' and trashed = false`,
-          fields: 'files(id, name, mimeType)'
-        }).then(response => {
-          console.log('Fichiers trouvés :', response.result.files);
-          const files = response.result.files;
-          if (!files || files.length === 0) {
-            document.getElementById('audio-list').innerText = 'Aucun fichier trouvé.';
-            return;
-          }
+        function initClient() {
+            gapi.client.init({
+                clientId: '702949477364-khje9k7kp6o2maappfucllp3u6va77vt.apps.googleusercontent.com', // Encore une fois, assurez-vous que c'est le bon ID
+                scope: 'https://www.googleapis.com/auth/drive.readonly' // Scope pour lire les fichiers Drive
+            }).then(() => {
+                googleAuth = gapi.auth2.getAuthInstance();
+                isSignedIn = googleAuth.isSignedIn.get();
+                googleAuth.isSignedIn.listen(updateSigninStatus);
+                if (isSignedIn) {
+                    console.log('Déjà connecté.');
+                    listFiles();
+                }
+                // Le bouton de connexion est géré par g_id_onload et g_id_signin
+            }).catch(error => {
+                console.error('Erreur lors de l\'initialisation de gapi:', error);
+                document.getElementById('error-message').innerText = 'Erreur lors de la connexion à Google.';
+            });
+        }
 
-          files.forEach(file => {
-            const container = document.createElement('div');
-            container.innerHTML = `
-              <h3>${file.name}</h3>
-              <audio controls>
-                <source src="https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=AIzaSyCFIShJe5FjUrK00QAq7zGxHhXLuTbKxZA" type="${file.mimeType}">
-                Votre navigateur ne supporte pas l'audio.
-              </audio>
-            `;
-            document.getElementById('audio-list').appendChild(container);
-          });
-        }).catch(err => {
-          console.error('Erreur API:', err);
-        });
-      });
-    }
-  </script>
+        function handleCredentialResponse(response) {
+            console.log("ID Token:", response.credential);
+            // Ici, vous pouvez envoyer l'ID Token à votre serveur backend pour une authentification plus poussée si nécessaire.
+            // Pour cet exemple côté client uniquement, nous allons essayer d'initialiser gapi directement.
+            initClient();
+        }
+
+        function updateSigninStatus(isSignedIn) {
+            if (isSignedIn) {
+                console.log('Connecté.');
+                document.getElementById('error-message').innerText = '';
+                listFiles();
+            } else {
+                console.log('Non connecté.');
+                document.getElementById('audio-list').innerText = '';
+                document.getElementById('error-message').innerText = 'Veuillez vous connecter à Google pour accéder à vos fichiers audio.';
+            }
+        }
+
+        function listFiles() {
+            if (!isSignedIn || !gapi.client || !gapi.client.drive) {
+                console.error('Client Google API non initialisé ou non connecté.');
+                document.getElementById('error-message').innerText = 'Erreur : Client Google API non initialisé.';
+                return;
+            }
+
+            gapi.client.drive.files.list({
+                q: `'${11n9RVF-ZjTBOLMvoYB7asAs4A8hUfeYu}' in parents and mimeType contains 'audio' and trashed = false`,
+                fields: 'files(id, name, mimeType)'
+            }).then(response => {
+                const files = response.result.files;
+                const audioListDiv = document.getElementById('audio-list');
+                audioListDiv.innerHTML = ''; // Clear previous list
+
+                if (!files || files.length === 0) {
+                    audioListDiv.innerText = 'Aucun fichier audio trouvé dans le dossier.';
+                    return;
+                }
+
+                files.forEach(file => {
+                    const container = document.createElement('div');
+                    container.innerHTML = `
+                        <h3>${file.name}</h3>
+                        <audio controls>
+                            <source src="https://drive.google.com/uc?export=download&id=${file.id}" type="${file.mimeType}">
+                            Votre navigateur ne supporte pas l'audio.
+                        </audio>
+                    `;
+                    audioListDiv.appendChild(container);
+                });
+            }).catch(error => {
+                console.error('Erreur lors de la récupération des fichiers:', error);
+                document.getElementById('error-message').innerText = 'Erreur lors de la récupération des fichiers audio depuis Google Drive.';
+            });
+        }
+    </script>
 </body>
 </html>
