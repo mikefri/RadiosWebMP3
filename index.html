@@ -1,77 +1,69 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecteurs Audio Google Drive</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        .audio-container {
-            margin-top: 20px;
-        }
-        audio {
-            margin: 10px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Lecteur audio Drive</title>
 </head>
 <body>
-    <h1>Lecteur Audio Google Drive</h1>
-    <div id="audio-list" class="audio-container"></div>
+  <h1>Lecteur audio depuis Google Drive</h1>
+  <button onclick="handleAuthClick()">Se connecter</button>
+  <div id="audio-list"></div>
 
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script>
-        // ID de ton dossier Google Drive
-        const folderId = '11n9RVF-ZjTBOLMvoYB7asAs4A8hUfeYu'; 
+  <script src="https://apis.google.com/js/api.js"></script>
+  <script>
+    const CLIENT_ID = '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'; // à remplacer si besoin
+    const API_KEY = 'AIzaSyCFIShJe5FjUrK00QAq7zGxHhXLuTbKxZA';
+    const FOLDER_ID = '11n9RVF-ZjTBOLMvoYB7asAs4A8hUfeYu';
+    const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
 
-        // Ta clé API Google
-        const apiKey = 'AIzaSyCFIShJe5FjUrK00QAq7zGxHhXLuTbKxZA';
+    function handleClientLoad() {
+      gapi.load('client:auth2', initClient);
+    }
 
-        function init() {
-            gapi.client.init({
-                apiKey: apiKey,
-            }).then(() => {
-                console.log("API Google Drive initialisée.");
-                listFiles(folderId);
-            }).catch(error => {
-                console.error("Erreur lors de l'initialisation de l'API Google Drive :", error);
-            });
+    function initClient() {
+      gapi.client.init({
+        apiKey: API_KEY,
+        clientId: CLIENT_ID,
+        scope: SCOPES
+      }).then(() => {
+        console.log('API init');
+      });
+    }
+
+    function handleAuthClick() {
+      gapi.auth2.getAuthInstance().signIn().then(() => {
+        listFiles();
+      });
+    }
+
+    function listFiles() {
+      gapi.client.drive.files.list({
+        q: `'${FOLDER_ID}' in parents and mimeType contains 'audio' and trashed = false`,
+        fields: 'files(id, name, mimeType)'
+      }).then(response => {
+        const files = response.result.files;
+        if (!files || files.length === 0) {
+          document.getElementById('audio-list').innerText = 'Aucun fichier trouvé.';
+          return;
         }
 
-        function listFiles(folderId) {
-            gapi.client.drive.files.list({
-                q: `'${folderId}' in parents`,
-                fields: 'files(id, name, mimeType)',
-            }).then((response) => {
-                console.log('Réponse de l\'API Drive :', response);
-                const files = response.result.files;
-                if (files && files.length > 0) {
-                    files.forEach(file => {
-                        console.log(`Fichier trouvé : ${file.name} (${file.mimeType})`);
+        files.forEach(file => {
+          const container = document.createElement('div');
+          container.innerHTML = `
+            <h3>${file.name}</h3>
+            <audio controls>
+              <source src="https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${API_KEY}" type="${file.mimeType}">
+              Votre navigateur ne supporte pas l'audio.
+            </audio>
+          `;
+          document.getElementById('audio-list').appendChild(container);
+        });
+      }, err => {
+        console.error('Erreur API:', err);
+      });
+    }
 
-                        if (file.mimeType === 'audio/mpeg') {  // Vérifie que c'est un fichier audio
-                            const audioElement = document.createElement('div');
-                            audioElement.innerHTML = `
-                                <h2>${file.name}</h2>
-                                <audio controls>
-                                    <source src="https://drive.google.com/uc?export=download&id=${file.id}" type="audio/mp3">
-                                    Votre navigateur ne prend pas en charge la balise audio.
-                                </audio>
-                            `;
-                            document.getElementById('audio-list').appendChild(audioElement);
-                        }
-                    });
-                } else {
-                    console.log('Aucun fichier audio trouvé dans le dossier.');
-                }
-            }).catch(error => {
-                console.error("Erreur lors de la récupération des fichiers Google Drive :", error);
-            });
-        }
-
-        gapi.load('client', init);
-    </script>
+    handleClientLoad();
+  </script>
 </body>
 </html>
