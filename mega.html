@@ -19,10 +19,10 @@
 
     // Fonction pour se connecter à MEGA
     function loginToMega() {
-      megaClient = new mega.MegaApiClient();
+      megaClient = mega();
 
       // Remplace 'votre_email' et 'votre_mot_de_passe' par tes identifiants MEGA
-      megaClient.login('mikefri58@gmail.com', 'Fm01031985@', (err) => {
+      megaClient.login('mikefri58@gmail.com', 'Fm01031985@', function(err) {
         if (err) {
           console.error('Erreur de connexion:', err);
         } else {
@@ -35,8 +35,9 @@
     // Fonction pour lister les fichiers audio depuis MEGA
     function listAudioFiles() {
       // Spécifier le dossier MEGA où se trouvent les fichiers audio (si nécessaire)
-      const folderLink = 'https://mega.nz/folder/CNdw0RQY#lmoLlrBYvpnkehG9RPBK7w'; // Remplace avec le lien vers ton dossier MEGA
-      megaClient.download(folderLink, (files) => {
+      const folderLink = 'lien_vers_le_dossier_mega'; // Remplace avec le lien vers ton dossier MEGA
+
+      megaClient.download(folderLink, function(files) {
         const audioListContainer = document.getElementById('audio-list');
         
         // Si des fichiers sont trouvés
