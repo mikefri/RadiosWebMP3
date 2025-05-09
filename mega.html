@@ -2,66 +2,61 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Lecteur audio depuis MEGA</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/megajs/0.1.3/mega.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecteur audio MEGA</title>
 </head>
 <body>
   <h1>Lecteur audio depuis MEGA</h1>
+  
   <button onclick="loginToMega()">Se connecter à MEGA</button>
   <div id="audio-list"></div>
 
+  <!-- Charger le SDK MEGA -->
+  <script src="https://unpkg.com/megajs@1.3.7/dist/main.browser-umd.js"></script>
+
   <script>
-    // Fonction pour s'assurer que le SDK de MEGA est bien chargé
-    function loadMegaSDK() {
-      if (typeof mega !== 'undefined') {
-        console.log("MEGA SDK chargé");
-      } else {
-        console.error("Le SDK de MEGA n'a pas été chargé correctement.");
-      }
-    }
+    let megaClient;
 
-    // Fonction de connexion
+    // Fonction pour se connecter à MEGA
     function loginToMega() {
-      if (typeof mega !== 'undefined') {
-        // Les informations de connexion (email, mot de passe)
-        const email = "mikefri58@gmail.com";
-        const password = "Fm01031985@";
+      megaClient = new mega.MegaApiClient();
 
-        mega.login(email, password, function (result) {
-          if (result) {
-            console.log("Connexion réussie");
-            listAudioFiles();
-          } else {
-            alert("Échec de la connexion");
-          }
-        });
-      } else {
-        alert("Le SDK de MEGA n'a pas pu être chargé.");
-      }
+      // Remplace 'votre_email' et 'votre_mot_de_passe' par tes identifiants MEGA
+      megaClient.login('mikefri58@gmail.com', 'Fm01031985@', (err) => {
+        if (err) {
+          console.error('Erreur de connexion:', err);
+        } else {
+          console.log('Connexion réussie!');
+          listAudioFiles();
+        }
+      });
     }
 
     // Fonction pour lister les fichiers audio depuis MEGA
     function listAudioFiles() {
-      const audioContainer = document.getElementById("audio-list");
-      mega.getFiles(function(files) {
-        files.forEach(file => {
-          if (file.name.endsWith(".mp3") || file.name.endsWith(".wav") || file.name.endsWith(".ogg")) {
-            const audioElement = document.createElement("div");
-            audioElement.innerHTML = `
+      // Spécifier le dossier MEGA où se trouvent les fichiers audio (si nécessaire)
+      const folderLink = 'https://mega.nz/folder/CNdw0RQY#lmoLlrBYvpnkehG9RPBK7w'; // Remplace avec le lien vers ton dossier MEGA
+      megaClient.download(folderLink, (files) => {
+        const audioListContainer = document.getElementById('audio-list');
+        
+        // Si des fichiers sont trouvés
+        if (files.length > 0) {
+          files.forEach((file) => {
+            const fileDiv = document.createElement('div');
+            fileDiv.innerHTML = `
               <h3>${file.name}</h3>
               <audio controls>
-                <source src="${file.url}" type="audio/mpeg">
+                <source src="${file.url}" type="${file.mime}">
                 Votre navigateur ne supporte pas l'audio.
               </audio>
             `;
-            audioContainer.appendChild(audioElement);
-          }
-        });
+            audioListContainer.appendChild(fileDiv);
+          });
+        } else {
+          audioListContainer.innerHTML = 'Aucun fichier audio trouvé dans ce dossier.';
+        }
       });
     }
-
-    // Appeler la fonction pour vérifier si le SDK est chargé
-    loadMegaSDK();
   </script>
 </body>
 </html>
