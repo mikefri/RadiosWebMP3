@@ -12,12 +12,12 @@
   <div id="audio-list"></div>
 
   <!-- Charger le SDK MEGA -->
-  <script src="https://unpkg.com/megajs@1.3.7/dist/main.browser-umd.js"></script>
+  <script src="https://unpkg.com/megajs@1.2.0/dist/main.browser-umd.js"></script>
 
   <script>
     let megaClient;
 
-    // Fonction pour s'assurer que le SDK est chargé avant d'utiliser l'API
+    // Fonction pour vérifier si le SDK MEGA est chargé
     function loadMegaSDK() {
       if (typeof mega === 'undefined') {
         console.error("Le SDK MEGA n'a pas été chargé correctement.");
@@ -35,7 +35,7 @@
 
       megaClient = mega();
 
-      // Remplace 'votre_email' et 'votre_mot_de_passe' par tes identifiants MEGA
+      // Remplacez 'votre_email' et 'votre_mot_de_passe' par vos identifiants MEGA
       megaClient.login('mikefri58@gmail.com', 'Fm01031985@', function(err) {
         if (err) {
           console.error('Erreur de connexion:', err);
@@ -48,19 +48,20 @@
 
     // Fonction pour lister les fichiers audio depuis MEGA
     function listAudioFiles() {
-      // Utilise uniquement l'ID du dossier
-      const folderLink = 'CNdw0RQY#lmoLlrBYvpnkehG9RPBK7w';  // Remplace par l'ID du dossier MEGA
+      // Lien vers le dossier MEGA, assurez-vous de le remplacer par le bon lien ou ID du dossier
+      const folderLink = 'CNdw0RQY#lmoLlrBYvpnkehG9RPBK7w';  // Remplacez par l'ID du dossier MEGA
 
       megaClient.readdir(folderLink, function(err, files) {
         const audioListContainer = document.getElementById('audio-list');
         
-        // Si des fichiers sont trouvés
+        // Gestion des erreurs lors de la lecture du dossier
         if (err) {
           console.error('Erreur lors de la lecture du dossier:', err);
           audioListContainer.innerHTML = 'Erreur de récupération des fichiers.';
           return;
         }
 
+        // Si des fichiers sont trouvés, on les affiche
         if (files.length > 0) {
           files.forEach((file) => {
             if (file.name.endsWith('.mp3') || file.name.endsWith('.wav') || file.name.endsWith('.ogg')) {
