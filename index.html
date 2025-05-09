@@ -80,12 +80,15 @@
                         const songElement = document.createElement('div');
                         songElement.classList.add('song');
 
+                        // Assurer que l'URL est valide et pointe vers un fichier MP3
+                        const audioUrl = song.url; // Assure-toi que `song.url` est une URL valide
+
                         // Créer l'élément HTML pour chaque chanson
                         songElement.innerHTML = `
                             <p>${song.title}</p>
                             <p class="artist">par ${song.artist}</p>
                             <audio controls>
-                                <source src="${song.url}" type="audio/mpeg">
+                                <source src="${audioUrl}" type="audio/mpeg">
                                 Votre navigateur ne prend pas en charge l'élément audio.
                             </audio>
                         `;
