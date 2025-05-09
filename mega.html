@@ -17,8 +17,22 @@
   <script>
     let megaClient;
 
+    // Fonction pour s'assurer que le SDK est chargé avant d'utiliser l'API
+    function loadMegaSDK() {
+      if (typeof mega === 'undefined') {
+        console.error("Le SDK MEGA n'a pas été chargé correctement.");
+      } else {
+        console.log("SDK MEGA chargé avec succès.");
+      }
+    }
+
     // Fonction pour se connecter à MEGA
     function loginToMega() {
+      if (typeof mega === 'undefined') {
+        console.error("Le SDK MEGA n'est pas disponible.");
+        return;
+      }
+
       megaClient = mega();
 
       // Remplace 'votre_email' et 'votre_mot_de_passe' par tes identifiants MEGA
@@ -58,6 +72,9 @@
         }
       });
     }
+
+    // Charger le SDK au démarrage
+    loadMegaSDK();
   </script>
 </body>
 </html>
