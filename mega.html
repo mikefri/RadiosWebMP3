@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lecteur audio depuis MEGA</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/megajs/0.1.3/mega.min.js"></script>
+</head>
+<body>
+  <h1>Lecteur audio depuis MEGA</h1>
+  <button onclick="loginToMega()">Se connecter à MEGA</button>
+  <div id="audio-list"></div>
+
+  <script>
+    // Les informations de connexion (email, mot de passe)
+    const email = "mikefri58@gmail.com";
+    const password = "Fm01031985@";
+
+    // Fonction pour se connecter à MEGA
+    function loginToMega() {
+      mega.login(email, password, function (result) {
+        if (result) {
+          console.log("Connexion réussie");
+          listAudioFiles();
+        } else {
+          alert("Échec de la connexion");
+        }
+      });
+    }
+
+    // Fonction pour lister les fichiers audio depuis MEGA
+    function listAudioFiles() {
+      const audioContainer = document.getElementById("audio-list");
+      // Accéder au répertoire où sont stockés les fichiers audio (par exemple "Music")
+      mega.getFiles(function(files) {
+        files.forEach(file => {
+          // Filtrer les fichiers audio
+          if (file.name.endsWith(".mp3") || file.name.endsWith(".wav") || file.name.endsWith(".ogg")) {
+            const audioElement = document.createElement("div");
+            audioElement.innerHTML = `
+              <h3>${file.name}</h3>
+              <audio controls>
+                <source src="${file.url}" type="audio/mpeg">
+                Votre navigateur ne supporte pas l'audio.
+              </audio>
+            `;
+            audioContainer.appendChild(audioElement);
+          }
+        });
+      });
+    }
+  </script>
+</body>
+</html>
