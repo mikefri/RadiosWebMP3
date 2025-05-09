@@ -7,7 +7,7 @@
 </head>
 <body>
   <h1>Lecteur audio depuis Google Drive</h1>
-  <button onclick="handleAuthClick()">Se connecter</button>
+  <button id="authButton">Se connecter</button>
   <div id="audio-list"></div>
 
   <script src="https://apis.google.com/js/api.js"></script>
@@ -63,6 +63,9 @@
         console.error('Erreur API:', err);
       });
     }
+
+    // Lier l'événement "click" du bouton à la fonction handleAuthClick
+    document.getElementById('authButton').addEventListener('click', handleAuthClick);
 
     handleClientLoad();
   </script>
