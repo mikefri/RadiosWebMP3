@@ -69,17 +69,22 @@
 
         // Liste pour stocker les URLs des chansons
         const songUrls = songs.map(song => song.url);
+        console.log("Liste des chansons : ", songUrls);  // Affiche les URLs des chansons pour déboguer
 
         // Créer le lecteur audio
         const audioPlayer = document.createElement("audio");
         audioPlayer.controls = true;
         audioPlayer.src = songUrls[0]; // Commencer par la première chanson
+
         audioPlayer.addEventListener('ended', () => {
           // Lorsque la chanson est terminée, passer à la suivante
           const currentIndex = songUrls.indexOf(audioPlayer.src);
           const nextIndex = (currentIndex + 1) % songUrls.length;
           audioPlayer.src = songUrls[nextIndex];
-          audioPlayer.play();
+          audioPlayer.play().catch(error => {
+            console.error("Erreur de lecture de la chanson :", error);
+            alert("Impossible de lire cette chanson.");
+          });
         });
 
         // Ajouter le lecteur à la page
@@ -101,6 +106,7 @@
         // Fonction pour jouer une chanson spécifique
         window.playSong = function(index) {
           const audio = document.querySelector("audio");
+          console.log("Chanson en cours : ", songUrls[index]);  // Affiche l'URL pour déboguer
           audio.src = songUrls[index];
           audio.play().catch(error => {
             console.error("Erreur de lecture de la chanson :", error);
