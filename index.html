@@ -33,7 +33,10 @@
             gapi.client.init({
                 apiKey: apiKey,
             }).then(() => {
+                console.log("API Google Drive initialisée.");
                 listFiles(folderId);
+            }).catch(error => {
+                console.error("Erreur lors de l'initialisation de l'API Google Drive :", error);
             });
         }
 
@@ -42,9 +45,12 @@
                 q: `'${folderId}' in parents`,
                 fields: 'files(id, name, mimeType)',
             }).then((response) => {
+                console.log('Réponse de l\'API Drive :', response);
                 const files = response.result.files;
                 if (files && files.length > 0) {
                     files.forEach(file => {
+                        console.log(`Fichier trouvé : ${file.name} (${file.mimeType})`);
+
                         if (file.mimeType === 'audio/mpeg') {  // Vérifie que c'est un fichier audio
                             const audioElement = document.createElement('div');
                             audioElement.innerHTML = `
@@ -60,6 +66,8 @@
                 } else {
                     console.log('Aucun fichier audio trouvé dans le dossier.');
                 }
+            }).catch(error => {
+                console.error("Erreur lors de la récupération des fichiers Google Drive :", error);
             });
         }
 
