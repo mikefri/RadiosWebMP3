@@ -3,7 +3,7 @@
   {
     "title": "Morceau test",
     "artist": "Troisième test",
-    "path": "/volume1/web/musique/test.mp3"
+    "path": "/musique/test.mp3"
   }
   // ... ajoutez tous vos fichiers audio ici
 ]
