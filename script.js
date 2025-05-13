@@ -11,16 +11,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fonction pour récupérer la liste des chansons depuis le fichier JSON sur le NAS
     async function loadSongs() {
-        try {
-            const response = await fetch('/audio_list.json'); // Assurez-vous que le chemin est correct
-            const data = await response.json();
-            allSongs = data;
-            displaySongs(allSongs);
-        } catch (error) {
-            console.error("Erreur lors du chargement de la liste des chansons:", error);
-            playlistElement.innerHTML = "Impossible de charger la liste des chansons.";
-        }
+  try {
+    const response = await fetch('/audio_list.json'); // Ajustez ce chemin si nécessaire
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP: ${response.status}`);
     }
+    const data = await response.json();
+    allSongs = data;
+    displaySongs(allSongs);
+  } catch (error) {
+    console.error("Erreur lors du chargement de la liste des chansons:", error);
+    playlistElement.innerHTML = "Impossible de charger la liste des chansons.";
+  }
+}
 
     // Fonction pour afficher la liste des chansons
     function displaySongs(songs) {
