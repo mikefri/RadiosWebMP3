@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fonction pour récupérer la liste des chansons depuis le fichier JSON sur le NAS
     async function loadSongs() {
   try {
-    const response = await fetch('/audio_list.json'); // Ajustez ce chemin si nécessaire
+    const response = await fetch('/audios_list.json'); // Ajustez ce chemin si nécessaire
     if (!response.ok) {
       throw new Error(`Erreur HTTP: ${response.status}`);
     }
