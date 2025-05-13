@@ -3,7 +3,7 @@
   {
     "title": "Morceau test",
     "artist": "Troisième test",
-    "path": "http://radioswebmp3.synology.me/musique/test.mp3"
+    "path": "https://radioswebmp3.synology.me/musique/test.mp3"
   }
   // ... ajoutez tous vos fichiers audio ici
 ]
