@@ -1,0 +1,35 @@
+body {
+    font-family: sans-serif;
+    margin: 20px;
+}
+
+#playlist {
+    list-style: none;
+    padding: 0;
+}
+
+#playlist li {
+    padding: 8px 0;
+    cursor: pointer;
+}
+
+#playlist li:hover {
+    background-color: #f0f0f0;
+}
+
+#currentPlaylist {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+#currentPlaylist li {
+    padding: 5px 0;
+}
+
+#currentPlaylist li button {
+    margin-left: 10px;
+    cursor: pointer;
+}
