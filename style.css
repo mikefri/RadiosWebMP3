@@ -5,6 +5,7 @@ body {
   margin: 20px;
   background-color: #f4f4f4;
   color: #333;
+  padding-top: 80px; /* Ajout de padding pour éviter le chevauchement avec le lecteur fixe */
 }
 
 .container {
@@ -90,8 +91,25 @@ header h1 {
 }
 
 .audio-player-section {
-  margin-top: 20px;
+  background-color: #f8f8f8;
+  padding: 15px;
   text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  z-index: 100; /* Pour être au-dessus des autres éléments */
+}
+
+.fixed-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+#currentSongTitle {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
 }
 
 .controls-button {
