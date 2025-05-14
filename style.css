@@ -237,3 +237,40 @@ footer {
 #shuffleButton {
   margin-left: auto; /* Pousser le bouton shuffle à droite */
 }
+.tab-container {
+      display: flex;
+      margin-bottom: 10px;
+      align-items: center; /* Aligner verticalement les onglets et la recherche */
+    }
+
+    .tab-button {
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+      cursor: pointer;
+      border-radius: 5px 5px 0 0;
+      font-size: 0.95em;
+      margin-right: 5px; /* Ajouter un peu d'espace entre les onglets et la recherche */
+    }
+
+    .tab-button.active {
+      background-color: #ddd;
+    }
+
+    .search-bar {
+      margin-left: auto; /* Pousser la barre de recherche à droite */
+      margin-bottom: 0; /* Supprimer la marge du bas car elle est maintenant dans le tab-container */
+    }
+
+    .search-bar input[type="text"] {
+      padding: 8px; /* Réduire un peu le padding pour s'aligner avec les onglets */
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+
+    .tab-content {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 0 5px 5px 5px;
+    }
