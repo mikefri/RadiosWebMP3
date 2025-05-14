@@ -13,32 +13,24 @@
     <h1>Mon Lecteur Audio NAS</h1>
     <div id="currentSongTitle" class="now-playing"></div>
     <div class="audio-player">
+      <button id="prevButton" class="controls-button">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/>
+        </svg>
+      </button>
       <audio id="audioPlayer" controls></audio>
-      <button id="shuffleButton" class="controls-button">Lecture Aléatoire</button>
-      <div class="top-bar">
-  <h1>Mon Lecteur Audio NAS</h1>
-  <div id="currentSongTitle" class="now-playing"></div>
-  <div class="audio-player">
-    <button id="prevButton" class="controls-button">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/>
-      </svg>
-    </button>
-    <audio id="audioPlayer" controls></audio>
-    <button id="nextButton" class="controls-button">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M6 18l8.5-6L6 6v12zm3.5-12h2v12h-2V6z"/>
-      </svg>
-    </button>
-    <div class="progress-container">
-      <input type="range" id="progressBar" value="0" min="0" max="100">
-      <div class="time-display">
-        <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+      <button id="nextButton" class="controls-button">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 18l8.5-6L6 6v12zm3.5-12h2v12h-2V6z"/>
+        </svg>
+      </button>
+      <div class="progress-container">
+        <input type="range" id="progressBar" value="0" min="0" max="100">
+        <div class="time-display">
+          <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+        </div>
       </div>
-    </div>
-    <button id="shuffleButton" class="controls-button">Lecture Aléatoire</button>
-  </div>
-</div>
+      <button id="shuffleButton" class="controls-button">Lecture Aléatoire</button>
     </div>
   </div>
 
