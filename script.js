@@ -5,8 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const currentPlaylistElement = document.getElementById('currentPlaylist');
   const shuffleButton = document.getElementById('shuffleButton');
   const currentSongTitleElement = document.getElementById('currentSongTitle');
-  const prevButton = document.getElementById('prevButton');
-  const nextButton = document.getElementById('nextButton');
   const progressBar = document.getElementById('progressBar');
   const currentTimeDisplay = document.getElementById('currentTime');
   const durationDisplay = document.getElementById('duration');
@@ -43,9 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
     songs.forEach((song, index) => {
       const listItem = document.createElement('li');
       listItem.textContent = song.title + (song.artist ? ` - ${song.artist}` : '');
-      listItem.addEventListener('click', () => playNow(song));
+      listItem.addEventListener('click', () => handleSongClick(song));
       playlistElement.appendChild(listItem);
     });
+  }
+
+  function handleSongClick(song) {
+    playNow(song);
+    addToPlaylist(song);
   }
 
   function playNow(song) {
@@ -188,18 +191,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  
-
   loadSongs();
-
-playlistElement.addEventListener('click', (event) => {
-  if (event.target.tagName === 'LI') {
-    const songTitle = event.target.textContent.split(' - ')[0];
-    const selectedSong = allSongs.find(song => song.title === songTitle);
-    if (selectedSong) {
-      playNow(selectedSong); // Démarrer la lecture
-      addToPlaylist(selectedSong); // Ajouter à la playlist actuelle
-    }
-  }
-});
 });
