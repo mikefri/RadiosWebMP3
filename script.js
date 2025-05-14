@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressBar = document.getElementById('progressBar');
   const currentTimeDisplay = document.getElementById('currentTime');
   const durationDisplay = document.getElementById('duration');
+  const savePlaylistButton = document.getElementById('savePlaylistButton');
+  const loadPlaylistsButton = document.getElementById('loadPlaylistsButton');
+  const savedPlaylistsSection = document.getElementById('savedPlaylistsSection');
+  const savedPlaylistsList = document.getElementById('savedPlaylistsList');
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabContents = document.querySelectorAll('.tab-content');
 
@@ -167,56 +171,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentPlaylist.length > 0) {
       for (let i = currentPlaylist.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [currentPlaylist[i], currentPlaylist[j]] = [currentPlaylist[j], currentPlaylist[i]];
-      }
-      currentSongIndex = 0;
-      updateCurrentPlaylistDisplay();
-      playFromPlaylist(currentSongIndex);
-    }
-  });
-
-  // Fonction pour formater le temps en minutes et secondes (inchangée)
-  function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60).toString().padStart(2, '0');
-    return `${minutes}:${remainingSeconds}`;
-  }
-
-  // Mettre à jour la barre de progression et l'affichage du temps (inchangée)
-  function updateProgress() {
-    if (audioPlayer.duration) {
-      const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-      progressBar.value = progress;
-      currentTimeDisplay.textContent = formatTime(audioPlayer.currentTime);
-      durationDisplay.textContent = formatTime(audioPlayer.duration);
-    }
-  }
-
-  // Écouteur d'événement pour mettre à jour la progression pendant la lecture (inchangé)
-  audioPlayer.addEventListener('timeupdate', updateProgress);
-
-  // Écouteur d'événement pour la barre de progression (navigation) (inchangé)
-  progressBar.addEventListener('input', () => {
-    const seekTime = (progressBar.value / 100) * audioPlayer.duration;
-    audioPlayer.currentTime = seekTime;
-  });
-
-  // Empêcher la mise à jour double pendant le déplacement de la souris (inchangé)
-  progressBar.addEventListener('mousedown', () => {
-    isDragging = true;
-  });
-
-  progressBar.addEventListener('mouseup', () => {
-    isDragging = false;
-  });
-
-  progressBar.addEventListener('mousemove', () => {
-    if (isDragging) {
-      const seekTime = (progressBar.value / 100) * audioPlayer.duration;
-      currentTimeDisplay.textContent = formatTime(seekTime); // Mettre à jour l'affichage en temps réel
-    }
-  });
-
-  loadSongs();
-  showTab('playlist-section'); // Afficher la liste des chansons par défaut
-});
+        [currentPlaylist[i], currentPlaylist[j]] = [currentPlaylist[j], currentPlaylist
