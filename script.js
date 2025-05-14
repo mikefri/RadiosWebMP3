@@ -188,20 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Écouteurs d'événements pour les boutons Précédent et Suivant
-  prevButton.addEventListener('click', () => {
-    if (currentPlaylist.length > 0) {
-      currentSongIndex = (currentSongIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
-      playFromPlaylist(currentSongIndex);
-    }
-  });
-
-  nextButton.addEventListener('click', () => {
-    if (currentPlaylist.length > 0) {
-      currentSongIndex = (currentSongIndex + 1) % currentPlaylist.length;
-      playFromPlaylist(currentSongIndex);
-    }
-  });
+  
 
   loadSongs();
 
