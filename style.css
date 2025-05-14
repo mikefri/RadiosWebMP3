@@ -69,11 +69,16 @@ h1 {
   max-width: 600px;
   width: 100%;
   box-shadow: 0 8px 30px rgba(0, 255, 255, 0.3);
+  flex-direction: row; /* Changer pour aligner les boutons et l'audio en ligne */
+  align-items: center; /* Aligner verticalement les éléments */
 }
 
 audio {
   width: 100%;
   max-width: 400px;
+  flex-grow: 1; /* Permettre à l'audio de prendre l'espace entre les boutons */
+  max-width: none; /* Supprimer la limitation de largeur pour qu'il s'étende */
+  margin: 0 15px; /* Ajouter un peu de marge de chaque côté de l'audio */
 }
 
 .controls-button {
@@ -176,4 +181,59 @@ footer {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   color: #aaa;
   font-size: 0.9em;
+}
+
+.progress-container {
+  width: 100%;
+  max-width: 400px; /* Limiter la largeur de la barre de progression */
+  margin-top: 10px; /* Espacement au-dessus du lecteur audio */
+}
+
+#progressBar {
+  width: 100%;
+  height: 8px;
+  -webkit-appearance: none;
+  background: #555;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+}
+
+#progressBar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #00ffe0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+#progressBar::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: #00ffe0;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.time-display {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8em;
+  color: #aaa;
+  margin-top: 5px;
+}
+
+/* Style pour les icônes SVG des boutons précédent/suivant */
+.controls-button svg {
+  width: 24px;
+  height: 24px;
+  display: block; /* Empêcher les marges supplémentaires */
+}
+
+/* Ajuster la marge du bouton shuffle pour l'alignement */
+#shuffleButton {
+  margin-left: auto; /* Pousser le bouton shuffle à droite */
 }
