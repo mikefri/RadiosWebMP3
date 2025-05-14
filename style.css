@@ -102,7 +102,7 @@ audio {
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
   backdrop-filter: blur(10px);
-  margin-top: 70px; /* Ajouter une marge en haut */
+  margin-top: 80px; /* Ajouter une marge en haut */
 }
 
 .search-bar {
