@@ -192,13 +192,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadSongs();
 
-  playlistElement.addEventListener('click', (event) => {
-    if (event.target.tagName === 'LI') {
-      const songTitle = event.target.textContent.split(' - ')[0];
-      const selectedSong = allSongs.find(song => song.title === songTitle);
-      if (selectedSong) {
-        addToPlaylist(selectedSong);
-      }
+playlistElement.addEventListener('click', (event) => {
+  if (event.target.tagName === 'LI') {
+    const songTitle = event.target.textContent.split(' - ')[0];
+    const selectedSong = allSongs.find(song => song.title === songTitle);
+    if (selectedSong) {
+      playNow(selectedSong); // Démarrer la lecture
+      addToPlaylist(selectedSong); // Ajouter à la playlist actuelle
     }
-  });
+  }
+});
 });
