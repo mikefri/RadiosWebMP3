@@ -1,26 +1,112 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecteur Audio NAS</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+  <title>Lecteur Audio NAS</title>
+  <script src="flac.js"></script> </head>
 <body>
-    <h1>Lecteur Audio NAS</h1>
+  <input type="text" id="searchInput" placeholder="Rechercher des chansons...">
+  <ul id="playlist"></ul>
+  <h2>Playlist Actuelle</h2>
+  <ul id="currentPlaylist"></ul>
+  <audio id="audioPlayer" controls></audio>
+  <button id="shuffleButton">Lecture Aléatoire</button>
 
-    <input type="text" id="searchInput" placeholder="Rechercher une chanson...">
-    <ul id="playlist">
-        </ul>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // ... Votre code JavaScript existant ...
 
-    <audio id="audioPlayer" controls></audio>
+      // Les fonctions playNow et playFromPlaylist seront modifiées
+      async function playNow(song) {
+        try {
+          const response = await fetch(song.path);
+          const arrayBuffer = await response.arrayBuffer();
+          decodeAndPlayFLAC(arrayBuffer);
+          document.title = `Lecture : ${song.title} - Lecteur Audio NAS`;
+        } catch (error) {
+          console.error("Erreur lors de la récupération ou du décodage du fichier FLAC:", error);
+          audioPlayer.src = ''; // Réinitialiser la source audio en cas d'erreur
+        }
+      }
 
-    <h2>Playlist</h2>
-    <ul id="currentPlaylist">
-        </ul>
+      async function playFromPlaylist(index) {
+        if (currentPlaylist.length > 0 && index >= 0 && index < currentPlaylist.length) {
+          currentSongIndex = index;
+          const song = currentPlaylist[currentSongIndex];
+          try {
+            const response = await fetch(song.path);
+            const arrayBuffer = await response.arrayBuffer();
+            decodeAndPlayFLAC(arrayBuffer);
+            document.title = `Lecture Playlist : ${song.title} - Lecteur Audio NAS`;
+          } catch (error) {
+            console.error("Erreur lors de la récupération ou du décodage du fichier FLAC:", error);
+            audioPlayer.src = ''; // Réinitialiser la source audio en cas d'erreur
+          }
+        }
+      }
 
-    <button id="shuffleButton">Lecture Aléatoire</button>
+      // Fonction pour décoder et jouer le fichier FLAC
+      let audioContext;
+      let flacDecoder;
+      let audioBufferSource;
 
-    <script src="script.js"></script>
+      async function decodeAndPlayFLAC(arrayBuffer) {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (!flacDecoder) {
+          flacDecoder = new FLACDecoder();
+        }
+
+        try {
+          const audioData = await flacDecoder.decode(arrayBuffer);
+          const numberOfChannels = audioData.channels;
+          const sampleRate = audioData.sampleRate;
+          const length = audioData.samples.length / numberOfChannels;
+          const audioBuffer = audioContext.createBuffer(numberOfChannels, length, sampleRate);
+
+          for (let channel = 0; channel < numberOfChannels; channel++) {
+            const channelData = audioBuffer.getChannelData(channel);
+            for (let i = 0; i < length; i++) {
+              channelData[i] = audioData.samples[i * numberOfChannels + channel];
+            }
+          }
+
+          if (audioBufferSource) {
+            audioBufferSource.stop();
+            audioBufferSource.disconnect();
+          }
+
+          audioBufferSource = audioContext.createBufferSource();
+          audioBufferSource.buffer = audioBuffer;
+          audioBufferSource.connect(audioContext.destination);
+          audioBufferSource.addEventListener('ended', () => {
+            if (currentPlaylist.length > 0) {
+              currentSongIndex = (currentSongIndex + 1) % currentPlaylist.length;
+              playFromPlaylist(currentSongIndex);
+            }
+          });
+          audioBufferSource.start();
+        } catch (error) {
+          console.error("Erreur lors du décodage FLAC:", error);
+        }
+      }
+
+      // ... Le reste de votre code (loadSongs, displaySongs, searchInput listener, playlist functions, shuffle) ...
+
+      // Charger la liste des chansons au chargement de la page
+      loadSongs();
+
+      // Exemple d'ajout à la playlist (vous pouvez intégrer ceci dans la liste des chansons)
+      playlistElement.addEventListener('click', (event) => {
+        if (event.target.tagName === 'LI') {
+          const songTitle = event.target.textContent.split(' - ')[0];
+          const selectedSong = allSongs.find(song => song.title === songTitle);
+          if (selectedSong) {
+            addToPlaylist(selectedSong);
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html>
