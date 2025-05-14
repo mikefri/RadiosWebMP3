@@ -1,35 +1,120 @@
+/* style.css */
+
 body {
-    font-family: sans-serif;
-    margin: 20px;
+  font-family: sans-serif;
+  margin: 20px;
+  background-color: #f4f4f4;
+  color: #333;
 }
 
-#playlist {
-    list-style: none;
-    padding: 0;
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-#playlist li {
-    padding: 8px 0;
-    cursor: pointer;
+header {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-#playlist li:hover {
-    background-color: #f0f0f0;
+header h1 {
+  color: #007bff;
+  margin-bottom: 5px;
 }
 
+.search-bar {
+  margin-bottom: 20px;
+}
+
+.search-bar input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.playlist-section h2,
+.current-playlist-section h2 {
+  margin-top: 25px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+  color: #555;
+}
+
+#playlist,
 #currentPlaylist {
-    list-style: none;
-    padding: 0;
-    margin-top: 20px;
-    border: 1px solid #ccc;
-    padding: 10px;
+  list-style: none;
+  padding: 0;
 }
 
+#playlist li,
 #currentPlaylist li {
-    padding: 5px 0;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#playlist li:last-child,
+#currentPlaylist li:last-child {
+  border-bottom: none;
+}
+
+#playlist li:hover,
+#currentPlaylist li:hover {
+  background-color: #f9f9f9;
 }
 
 #currentPlaylist li button {
-    margin-left: 10px;
-    cursor: pointer;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 10px;
+  transition: background-color 0.3s ease;
+}
+
+#currentPlaylist li button:hover {
+  background-color: #c82333;
+}
+
+.audio-player-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.controls-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 15px;
+  transition: background-color 0.3s ease;
+}
+
+.controls-button:hover {
+  background-color: #218838;
+}
+
+footer {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  color: #777;
+  font-size: 14px;
 }
