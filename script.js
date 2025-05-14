@@ -219,6 +219,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Mettre à jour la barre de progression et l'affichage du temps
+  function updateProgress() {
+    if (audioPlayer.duration) {
+      const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+      progressBar.value = progress;
+      currentTimeDisplay.textContent = formatTime(audioPlayer.currentTime);
+      durationDisplay.textContent = formatTime(audioPlayer.duration);
+    }
+  }
+
+  // Écouteur d'événement pour mettre à jour la progression pendant la lecture
+  audioPlayer.addEventListener('timeupdate', updateProgress);
+
+  // Écouteur d'événement pour la barre de progression (navigation)
+  progressBar.addEventListener('input', () => {
+    const seekTime = (progressBar.value / 100) * audioPlayer.duration;
+    audioPlayer.currentTime = seekTime;
+  });
+
+  // Empêcher la mise à jour double pendant le déplacement de la souris
+  progressBar.addEventListener('mousedown', () => {
+    isDragging = true;
+  });
+
+  progressBar.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+
+  progressBar.addEventListener('mousemove', () => {
+    if (isDragging) {
+      const seekTime = (progressBar.value / 100) * audioPlayer.duration;
+      currentTimeDisplay.textContent = formatTime(seekTime); // Mettre à jour l'affichage en temps réel
+    }
+  });
+
   savePlaylistButton.addEventListener('click', savePlaylist);
   loadPlaylistsButton.addEventListener('click', loadSavedPlaylists);
 
