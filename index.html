@@ -7,15 +7,45 @@
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <script src="script.js"></script>
+  <style>
+    .tab-container {
+      display: flex;
+      margin-bottom: 10px;
+    }
+
+    .tab-button {
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+      cursor: pointer;
+      border-radius: 5px 5px 0 0;
+    }
+
+    .tab-button.active {
+      background-color: #ddd;
+    }
+
+    .tab-content {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 0 5px 5px 5px;
+    }
+
+    #playlist-section {
+      /* Sera affiché par défaut */
+    }
+
+    #current-playlist-section {
+      display: none; /* Sera caché par défaut */
+    }
+  </style>
 </head>
 <body>
   <div class="top-bar">
     <h1>Mon Lecteur Audio NAS</h1>
     <div id="currentSongTitle" class="now-playing"></div>
     <div class="audio-player">
-      
       <audio id="audioPlayer" controls></audio>
-      
       <div class="progress-container">
         <input type="range" id="progressBar" value="0" min="0" max="100">
         <div class="time-display">
@@ -31,34 +61,25 @@
       <input type="text" id="searchInput" placeholder="Rechercher une chanson, un artiste...">
     </section>
 
-    <section class="playlist-section">
+    <div class="tab-container">
+      <button class="tab-button active" data-tab="playlist-section">Liste des Chansons</button>
+      <button class="tab-button" data-tab="current-playlist-section">Playlist Actuelle</button>
+    </div>
+
+    <section id="playlist-section" class="tab-content">
       <h2>Liste des Chansons</h2>
       <ul id="playlist">
-        </ul>
+      </ul>
     </section>
 
-    <section class="current-playlist-section">
+    <section id="current-playlist-section" class="tab-content">
       <h2>Playlist Actuelle</h2>
-      <section class="current-playlist-section">
-  <h2>Playlist Actuelle</h2>
-  <div class="playlist-actions">
-    <button id="savePlaylistButton" class="controls-button">Sauvegarder la Playlist</button>
-    <button id="loadPlaylistsButton" class="controls-button">Charger les Playlists</button>
-  </div>
-  <ul id="currentPlaylist">
-  </ul>
-</section>
-      <section id="savedPlaylistsSection" style="display: none;">
-  <h2>Playlists Sauvegardées</h2>
-  <ul id="savedPlaylistsList">
-  </ul>
-</section>
       <ul id="currentPlaylist">
-        </ul>
+      </ul>
     </section>
 
     <footer>
-      <p>&copy; Fait avec coeur par Micfri</p>
+      <p>&copy; Mon Lecteur Audio NAS Perso - Propulsé par votre Synology et un peu de magie JavaScript.</p>
     </footer>
   </div>
 </body>
