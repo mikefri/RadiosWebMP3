@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressBar = document.getElementById('progressBar');
   const currentTimeDisplay = document.getElementById('currentTime');
   const durationDisplay = document.getElementById('duration');
+  const savePlaylistButton = document.getElementById('savePlaylistButton');
+  const loadPlaylistsButton = document.getElementById('loadPlaylistsButton');
+  const savedPlaylistsSection = document.getElementById('savedPlaylistsSection');
+  const savedPlaylistsList = document.getElementById('savedPlaylistsList');
 
   let allSongs = [];
   let currentPlaylist = [];
@@ -30,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       allSongs = data.map(song => ({ ...song, path: song.path.replace('.flac', '.mp3') }));
       displaySongs(allSongs);
+      loadSavedPlaylists(); // Charger les playlists sauvegardées au démarrage
     } catch (error) {
       console.error("Erreur lors du chargement de la liste des chansons:", error);
       playlistElement.innerHTML = "Impossible de charger la liste des chansons.";
@@ -149,14 +154,57 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Fonction pour formater le temps en minutes et secondes
+  function savePlaylist() {
+    const playlistName = prompt("Nommez votre playlist :");
+    if (playlistName) {
+      localStorage.setItem(`playlist_${playlistName}`, JSON.stringify(currentPlaylist));
+      loadSavedPlaylists(); // Mettre à jour la liste des playlists sauvegardées
+    }
+  }
+
+  function loadSavedPlaylists() {
+    savedPlaylistsList.innerHTML = '';
+    const savedPlaylists = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith('playlist_')) {
+        const playlistName = key.substring('playlist_'.length);
+        savedPlaylists.push(playlistName);
+      }
+    }
+
+    if (savedPlaylists.length > 0) {
+      savedPlaylists.forEach(name => {
+        const listItem = document.createElement('li');
+        listItem.textContent = name;
+        listItem.addEventListener('click', () => loadPlaylist(name));
+        savedPlaylistsList.appendChild(listItem);
+      });
+      savedPlaylistsSection.style.display = 'block';
+    } else {
+      savedPlaylistsSection.style.display = 'none';
+    }
+  }
+
+  function loadPlaylist(playlistName) {
+    const storedPlaylist = localStorage.getItem(`playlist_${playlistName}`);
+    if (storedPlaylist) {
+      currentPlaylist = JSON.parse(storedPlaylist);
+      updateCurrentPlaylistDisplay();
+    }
+  }
+
+  savePlaylistButton.addEventListener('click', savePlaylist);
+  loadPlaylistsButton.addEventListener('click', loadSavedPlaylists);
+
+  // Fonction pour formater le temps en minutes et secondes (inchangée)
   function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60).toString().padStart(2, '0');
     return `${minutes}:${remainingSeconds}`;
   }
 
-  // Mettre à jour la barre de progression et l'affichage du temps
+  // Mettre à jour la barre de progression et l'affichage du temps (inchangée)
   function updateProgress() {
     if (audioPlayer.duration) {
       const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
@@ -166,16 +214,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Écouteur d'événement pour mettre à jour la progression pendant la lecture
+  // Écouteur d'événement pour mettre à jour la progression pendant la lecture (inchangé)
   audioPlayer.addEventListener('timeupdate', updateProgress);
 
-  // Écouteur d'événement pour la barre de progression (navigation)
+  // Écouteur d'événement pour la barre de progression (navigation) (inchangé)
   progressBar.addEventListener('input', () => {
     const seekTime = (progressBar.value / 100) * audioPlayer.duration;
     audioPlayer.currentTime = seekTime;
   });
 
-  // Empêcher la mise à jour double pendant le déplacement de la souris
+  // Empêcher la mise à jour double pendant le déplacement de la souris (inchangé)
   progressBar.addEventListener('mousedown', () => {
     isDragging = true;
   });
