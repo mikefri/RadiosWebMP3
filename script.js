@@ -171,4 +171,57 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentPlaylist.length > 0) {
       for (let i = currentPlaylist.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [currentPlaylist[i], currentPlaylist[j]] = [currentPlaylist[j], currentPlaylist
+        [currentPlaylist[i], currentPlaylist[j]] = [currentPlaylist[j], currentPlaylist[i]];
+      }
+      currentSongIndex = 0;
+      updateCurrentPlaylistDisplay();
+      playFromPlaylist(currentSongIndex);
+    }
+  });
+
+  function savePlaylist() {
+    const playlistName = prompt("Nommez votre playlist :");
+    if (playlistName) {
+      localStorage.setItem(`playlist_${playlistName}`, JSON.stringify(currentPlaylist));
+      loadSavedPlaylists(); // Mettre à jour la liste des playlists sauvegardées
+    }
+  }
+
+  function loadSavedPlaylists() {
+    savedPlaylistsList.innerHTML = '';
+    const savedPlaylists = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith('playlist_')) {
+        const playlistName = key.substring('playlist_'.length);
+        savedPlaylists.push(playlistName);
+      }
+    }
+
+    if (savedPlaylists.length > 0) {
+      savedPlaylists.forEach(name => {
+        const listItem = document.createElement('li');
+        listItem.textContent = name;
+        listItem.addEventListener('click', () => loadPlaylist(name));
+        savedPlaylistsList.appendChild(listItem);
+      });
+      savedPlaylistsSection.style.display = 'block';
+    } else {
+      savedPlaylistsSection.style.display = 'none';
+    }
+  }
+
+  function loadPlaylist(playlistName) {
+    const storedPlaylist = localStorage.getItem(`playlist_${playlistName}`);
+    if (storedPlaylist) {
+      currentPlaylist = JSON.parse(storedPlaylist);
+      updateCurrentPlaylistDisplay();
+    }
+  }
+
+  savePlaylistButton.addEventListener('click', savePlaylist);
+  loadPlaylistsButton.addEventListener('click', loadSavedPlaylists);
+
+  loadSongs();
+  showTab('playlist-section'); // Afficher la liste des chansons par défaut
+});
