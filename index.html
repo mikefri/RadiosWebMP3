@@ -5,22 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lecteur Audio NAS</title>
   <link rel="stylesheet" href="style.css">
-  <script src="flac.js"></script>
   <script src="script.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Mon Lecteur Audio NAS Perso</h1>
+  <div class="container">
+    <header>
+      <h1>Mon Lecteur Audio NAS Perso</h1>
+      <p>Écoutez votre musique hébergée sur votre NAS en toute simplicité.</p>
+    </header>
 
-  <input type="text" id="searchInput" placeholder="Rechercher une chanson...">
-  <ul id="playlist">
-      </ul>
+    <section class="search-bar">
+      <input type="text" id="searchInput" placeholder="Rechercher une chanson, un artiste...">
+    </section>
 
-  <audio id="audioPlayer" controls></audio>
+    <section class="playlist-section">
+      <h2>Liste des Chansons</h2>
+      <ul id="playlist">
+        </ul>
+    </section>
 
-  <h2>Playlist</h2>
-  <ul id="currentPlaylist">
-      </ul>
+    <section class="audio-player-section">
+      <audio id="audioPlayer" controls></audio>
+    </section>
 
-  <button id="shuffleButton">Lecture Aléatoire</button>
+    <section class="current-playlist-section">
+      <h2>Playlist Actuelle</h2>
+      <ul id="currentPlaylist">
+        </ul>
+      <button id="shuffleButton" class="controls-button">Lecture Aléatoire</button>
+    </section>
+
+    <footer>
+      <p>&copy; Mon Lecteur Audio NAS Perso - Propulsé par votre Synology et un peu de magie JavaScript.</p>
+    </footer>
+  </div>
+
+  
 </body>
 </html>
