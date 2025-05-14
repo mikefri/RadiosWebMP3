@@ -6,7 +6,6 @@
   <title>Lecteur Audio NAS</title>
   <link rel="stylesheet" href="style.css">
   <script src="script.js"></script>
-  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
@@ -14,6 +13,11 @@
       <h1>Mon Lecteur Audio NAS Perso</h1>
       <p>Écoutez votre musique hébergée sur votre NAS en toute simplicité.</p>
     </header>
+
+    <section class="audio-player-section fixed-top">
+      <div id="currentSongTitle"></div>
+      <audio id="audioPlayer" controls></audio>
+    </section>
 
     <section class="search-bar">
       <input type="text" id="searchInput" placeholder="Rechercher une chanson, un artiste...">
@@ -23,10 +27,6 @@
       <h2>Liste des Chansons</h2>
       <ul id="playlist">
         </ul>
-    </section>
-
-    <section class="audio-player-section">
-      <audio id="audioPlayer" controls></audio>
     </section>
 
     <section class="current-playlist-section">
@@ -40,7 +40,5 @@
       <p>&copy; Mon Lecteur Audio NAS Perso - Propulsé par votre Synology et un peu de magie JavaScript.</p>
     </footer>
   </div>
-
-  
 </body>
 </html>
