@@ -217,15 +217,14 @@ document.addEventListener('DOMContentLoaded', () => {
         listItem.textContent = name;
         listItem.addEventListener('click', () => loadPlaylist(name));
 
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Supprimer';
-        deleteButton.classList.add('delete-playlist-button');
-        deleteButton.addEventListener('click', (event) => {
+        const deleteIcon = document.createElement('span');
+        deleteIcon.classList.add('delete-icon');
+        deleteIcon.addEventListener('click', (event) => {
           event.stopPropagation();
           deletePlaylist(name);
         });
 
-        listItem.appendChild(deleteButton);
+        listItem.appendChild(deleteIcon);
         savedPlaylistsList.appendChild(listItem);
       });
       savedPlaylistsSection.style.display = 'block';
