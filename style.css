@@ -53,19 +53,19 @@ h1 {
   font-size: 1.2em;
   color: #00ffe0;
   margin-bottom: 10px;
-  animation: depth-bounce 1s infinite alternate; /* Nom de l'animation */
-  transform-style: preserve-3d; /* Important pour les transformations 3D */
+  animation: pulse-now-playing 2s ease-in-out infinite; /* Nom de l'animation */
+  transform-origin: center center; /* S'assure que la mise à l'échelle se fait à partir du centre */
 }
 
-@keyframes depth-bounce {
+@keyframes pulse-now-playing {
   0% {
-    transform: translateZ(0);
+    transform: scale(1);
   }
   50% {
-    transform: translateZ(-10px); /* S'éloigne (valeur négative) */
+    transform: scale(1.1); /* Ajuste la valeur pour une pulsation plus ou moins forte */
   }
   100% {
-    transform: translateZ(0);
+    transform: scale(1);
   }
 }
 
