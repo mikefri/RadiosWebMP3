@@ -19,22 +19,15 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentPlaylist = [];
   let currentSongIndex = 0;
   let isDragging = false;
+  let currentPlaylistName = null; // Pour suivre le nom de la playlist actuelle
 
   function showTab(tabId) {
-    tabContents.forEach(content => {
-      content.style.display = 'none';
-    });
-    tabButtons.forEach(button => {
-      button.classList.remove('active');
-    });
+    tabContents.forEach(content => content.style.display = 'none');
+    tabButtons.forEach(button => button.classList.remove('active'));
     const activeTab = document.getElementById(tabId);
     const activeButton = document.querySelector(`.tab-button[data-tab="${tabId}"]`);
-    if (activeTab) {
-      activeTab.style.display = 'block';
-    }
-    if (activeButton) {
-      activeButton.classList.add('active');
-    }
+    if (activeTab) activeTab.style.display = 'block';
+    if (activeButton) activeButton.classList.add('active');
   }
 
   tabButtons.forEach(button => {
@@ -44,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Fonction pour formater le temps en minutes et secondes
+  // Formatte le temps en minutes et secondes
   function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60).toString().padStart(2, '0');
@@ -68,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function displaySongs(songs) {
     playlistElement.innerHTML = '';
-    songs.forEach((song, index) => {
+    songs.forEach((song) => {
       const listItem = document.createElement('li');
       listItem.textContent = song.title + (song.artist ? ` - ${song.artist}` : '');
       listItem.addEventListener('click', () => handleSongClick(song));
@@ -187,6 +180,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function deletePlaylist(playlistName) {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer la playlist "${playlistName}" ?`)) {
+      const keyToDelete = `playlist_${playlistName}`;
+      localStorage.removeItem(keyToDelete);
+      loadSavedPlaylists(); // Rafraîchir la liste des playlists après la suppression
+      if (currentPlaylistName === playlistName) {
+        currentPlaylist = [];
+        updateCurrentPlaylistDisplay();
+        audioPlayer.pause();
+        audioPlayer.src = '';
+        currentSongTitleElement.textContent = '';
+        document.title = 'Lecteur Audio NAS';
+        currentPlaylistName = null;
+      }
+      console.log(`Playlist "${playlistName}" supprimée.`);
+    } else {
+      console.log(`Suppression de la playlist "${playlistName}" annulée.`);
+    }
+  }
+
   function loadSavedPlaylists() {
     savedPlaylistsList.innerHTML = '';
     const savedPlaylists = [];
@@ -203,6 +216,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const listItem = document.createElement('li');
         listItem.textContent = name;
         listItem.addEventListener('click', () => loadPlaylist(name));
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Supprimer';
+        deleteButton.classList.add('delete-playlist-button');
+        deleteButton.addEventListener('click', (event) => {
+          event.stopPropagation();
+          deletePlaylist(name);
+        });
+
+        listItem.appendChild(deleteButton);
         savedPlaylistsList.appendChild(listItem);
       });
       savedPlaylistsSection.style.display = 'block';
@@ -216,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (storedPlaylist) {
       currentPlaylist = JSON.parse(storedPlaylist);
       updateCurrentPlaylistDisplay();
+      currentPlaylistName = playlistName; // Mettre à jour le nom de la playlist actuelle
     }
   }
 
@@ -258,5 +282,6 @@ document.addEventListener('DOMContentLoaded', () => {
   loadPlaylistsButton.addEventListener('click', loadSavedPlaylists);
 
   loadSongs();
+  loadSavedPlaylists(); // Charger les playlists sauvegardées au démarrage
   showTab('playlist-section'); // Afficher la liste des chansons par défaut
 });
