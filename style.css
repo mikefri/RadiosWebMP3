@@ -53,6 +53,19 @@ h1 {
   font-size: 1.2em;
   color: #00ffe0;
   margin-bottom: 10px;
+  animation: bounce 1s infinite alternate; /* Ajoute l'animation */
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px); /* Ajuste la hauteur du rebond ici */
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .audio-player {
