@@ -8,6 +8,7 @@
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>MP3 - RadiosWeb</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <script src="script.js"></script>
@@ -46,7 +47,9 @@
     <section id="current-playlist-section" class="tab-content">
       <h2>Playlist Actuelle</h2>
       <div class="playlist-actions">
-        <button id="savePlaylistButton" class="controls-button">Sauvegarder la Playlist</button>
+        <button id="savePlaylistButton" class="controls-button" title="Sauvegarder la Playlist">
+  <i class='fa fa-save' style='color:#ac22d3'></i>
+</button>
         <button id="loadPlaylistsButton" class="controls-button">Charger les Playlists</button>
       </div>
       <ul id="currentPlaylist">
