@@ -291,7 +291,15 @@ footer {
   user-select: none; /* Empêche la sélection de texte de l'icône */
 }
 
+#savedPlaylistsList li {
+  display: flex; /* Utiliser Flexbox pour l'alignement */
+  justify-content: space-between; /* Espacer le nom et l'icône */
+  align-items: center; /* Aligner verticalement au centre */
+  padding: 8px 0; /* Ajouter un peu de marge verticale */
+}
+
 .delete-icon {
+  /* Les styles existants pour l'icône restent les mêmes */
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -303,7 +311,6 @@ footer {
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
-  margin-left: 8px;
   user-select: none;
 }
 
