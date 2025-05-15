@@ -201,50 +201,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function loadSavedPlaylists() {
-  savedPlaylistsList.innerHTML = '';
-  const savedPlaylists = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key.startsWith('playlist_')) {
-      const playlistName = key.substring('playlist_'.length);
-      savedPlaylists.push(playlistName);
+    savedPlaylistsList.innerHTML = '';
+    const savedPlaylists = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith('playlist_')) {
+        const playlistName = key.substring('playlist_'.length);
+        savedPlaylists.push(playlistName);
+      }
     }
-  }
-
-  if (savedPlaylists.length > 0) {
-    savedPlaylists.forEach(name => {
-      const listItem = document.createElement('li');
-
-      const bullet = document.createElement('span');
-      bullet.classList.add('playlist-bullet');
-      listItem.appendChild(bullet);
-
-      const playlistNameSpan = document.createElement('span');
-      playlistNameSpan.textContent = name;
-      playlistNameSpan.addEventListener('click', () => loadPlaylist(name));
-      listItem.appendChild(playlistNameSpan);
-
-      const deleteIcon = document.createElement('span');
-      deleteIcon.classList.add('delete-icon');
-      deleteIcon.addEventListener('click', (event) => {
-        event.stopPropagation();
-        deletePlaylist(name);
-      });
-      listItem.appendChild(deleteIcon);
-
-      savedPlaylistsList.appendChild(listItem);
-    });
-    savedPlaylistsSection.style.display = 'block';
-  } else {
-    savedPlaylistsSection.style.display = 'none';
-  }
-}
 
     if (savedPlaylists.length > 0) {
       savedPlaylists.forEach(name => {
         const listItem = document.createElement('li');
-        listItem.textContent = name;
-        listItem.addEventListener('click', () => loadPlaylist(name));
+
+        const bullet = document.createElement('span');
+        bullet.classList.add('playlist-bullet');
+        listItem.appendChild(bullet);
+
+        const playlistNameSpan = document.createElement('span');
+        playlistNameSpan.textContent = name;
+        playlistNameSpan.addEventListener('click', () => loadPlaylist(name));
+        listItem.appendChild(playlistNameSpan);
 
         const deleteIcon = document.createElement('span');
         deleteIcon.classList.add('delete-icon');
@@ -252,8 +230,8 @@ document.addEventListener('DOMContentLoaded', () => {
           event.stopPropagation();
           deletePlaylist(name);
         });
-
         listItem.appendChild(deleteIcon);
+
         savedPlaylistsList.appendChild(listItem);
       });
       savedPlaylistsSection.style.display = 'block';
