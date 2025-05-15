@@ -53,18 +53,19 @@ h1 {
   font-size: 1.2em;
   color: #00ffe0;
   margin-bottom: 10px;
-  animation: bounce 1s infinite alternate; /* Ajoute l'animation */
+  animation: depth-bounce 1s infinite alternate; /* Nom de l'animation */
+  transform-style: preserve-3d; /* Important pour les transformations 3D */
 }
 
-@keyframes bounce {
+@keyframes depth-bounce {
   0% {
-    transform: translateY(0);
+    transform: translateZ(0);
   }
   50% {
-    transform: translateY(-10px); /* Ajuste la hauteur du rebond ici */
+    transform: translateZ(-10px); /* S'éloigne (valeur négative) */
   }
   100% {
-    transform: translateY(0);
+    transform: translateZ(0);
   }
 }
 
