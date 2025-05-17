@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentSongIndex = 0;
   let isDragging = false;
   let currentPlaylistName = null; // Pour suivre le nom de la playlist actuelle
-  const defaultCoverUrl = 'URL_DE_VOTRE_IMAGE_PAR_DEFAUT'; // Remplacez par l'URL de votre image par défaut
+  const defaultCoverUrl = 'https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png'; // Remplacez par l'URL de votre image par défaut
 
   function showTab(tabId) {
     tabContents.forEach(content => content.style.display = 'none');
