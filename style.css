@@ -373,24 +373,20 @@ footer {
   cursor: pointer; /* Indiquer que le nom est cliquable */
 }
 .song-item {
-  display: flex;
-  align-items: center;
-  padding: 5px;
-  cursor: pointer;
-}
-
-.song-item:hover {
-  background-color: #f0f0f0;
+  display: flex !important;
+  align-items: center !important;
+  padding: 5px !important;
+  cursor: pointer !important;
 }
 
 .song-cover {
-  width: 20px;
-  height: 20px;
-  margin-right: 5px;
-  vertical-align: middle;
+  width: 20px !important;
+  height: 20px !important;
+  margin-right: 1px !important;
+  vertical-align: middle !important;
 }
 
 .song-item span {
-  margin-left: 0;
-  padding-left: 0;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
 }
