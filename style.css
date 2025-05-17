@@ -375,7 +375,7 @@ footer {
 .song-item {
   display: flex; /* Assure que l'image et le texte sont sur la même ligne */
   align-items: center; /* Aligne verticalement l'image et le texte au centre */
-  padding: 5px;
+  padding: 2px;
   cursor: pointer;
 }
 
