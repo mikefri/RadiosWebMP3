@@ -71,8 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
       coverImage.classList.add('song-cover');
 
       const titleArtistSpan = document.createElement('span');
-      titleArtistSpan.textContent = song.title + (song.artist ? ` - ${song.artist}` : '');
-
+      titleArtistSpan.textContent = (song.artist ? `${song.artist} - ` : '') + song.title;
+      
       listItem.appendChild(coverImage);
       listItem.appendChild(titleArtistSpan);
       listItem.addEventListener('click', () => handleSongClick(song));
