@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentSongIndex = 0;
   let isDragging = false;
   let currentPlaylistName = null; // Pour suivre le nom de la playlist actuelle
+  const defaultCoverUrl = 'URL_DE_VOTRE_IMAGE_PAR_DEFAUT'; // Remplacez par l'URL de votre image par défaut
 
   function showTab(tabId) {
     tabContents.forEach(content => content.style.display = 'none');
@@ -63,7 +64,17 @@ document.addEventListener('DOMContentLoaded', () => {
     playlistElement.innerHTML = '';
     songs.forEach((song) => {
       const listItem = document.createElement('li');
-      listItem.textContent = song.title + (song.artist ? ` - ${song.artist}` : '');
+      listItem.classList.add('song-item');
+
+      const coverImage = document.createElement('img');
+      coverImage.src = song.artist_image || defaultCoverUrl;
+      coverImage.classList.add('song-cover');
+
+      const titleArtistSpan = document.createElement('span');
+      titleArtistSpan.textContent = song.title + (song.artist ? ` - ${song.artist}` : '');
+
+      listItem.appendChild(coverImage);
+      listItem.appendChild(titleArtistSpan);
       listItem.addEventListener('click', () => handleSongClick(song));
       playlistElement.appendChild(listItem);
     });
@@ -131,10 +142,21 @@ document.addEventListener('DOMContentLoaded', () => {
     currentPlaylistElement.innerHTML = '';
     currentPlaylist.forEach((song, index) => {
       const listItem = document.createElement('li');
-      listItem.textContent = song.title + (song.artist ? ` - ${song.artist}` : '');
+      listItem.classList.add('song-item');
+
+      const coverImage = document.createElement('img');
+      coverImage.src = song.artist_image || defaultCoverUrl;
+      coverImage.classList.add('song-cover');
+
+      const titleArtistSpan = document.createElement('span');
+      titleArtistSpan.textContent = song.title + (song.artist ? ` - ${song.artist}` : '');
+
       const removeButton = document.createElement('button');
       removeButton.textContent = 'Supprimer';
       removeButton.addEventListener('click', () => removeFromPlaylist(index));
+
+      listItem.appendChild(coverImage);
+      listItem.appendChild(titleArtistSpan);
       listItem.appendChild(removeButton);
       listItem.addEventListener('click', (event) => {
         if (event.target !== removeButton) {
