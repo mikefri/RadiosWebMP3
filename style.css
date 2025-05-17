@@ -386,7 +386,7 @@ footer {
 .song-cover {
   width: 20px; /* La taille de votre pochette */
   height: 20px; /* La taille de votre pochette */
-  margin-right: 2px; /* Réduit la marge à droite de l'image */
+  margin-right: 1px; /* Réduit la marge à droite de l'image */
   vertical-align: middle; /* Aligne verticalement l'image au milieu du texte */
 }
 .song-item span {
