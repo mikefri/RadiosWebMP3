@@ -372,3 +372,20 @@ footer {
   flex-grow: 1;
   cursor: pointer; /* Indiquer que le nom est cliquable */
 }
+.song-item {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.song-item:hover {
+  background-color: #f0f0f0;
+}
+
+.song-cover {
+  width: 30px; /* Ajustez la taille selon vos préférences */
+  height: 30px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
