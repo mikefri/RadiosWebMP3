@@ -384,8 +384,8 @@ footer {
 }
 
 .song-cover {
-  width: 10px; /* Ajustez la taille selon vos préférences */
-  height: 10px;
+  width: 20px; /* Ajustez la taille selon vos préférences */
+  height: 20px;
   margin-right: 10px;
   vertical-align: middle;
 }
