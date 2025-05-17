@@ -375,7 +375,7 @@ footer {
 .song-item {
   display: flex; /* Assure que l'image et le texte sont sur la même ligne */
   align-items: center; /* Aligne verticalement l'image et le texte au centre */
-  padding: 2px;
+  padding: 5px;
   cursor: pointer;
 }
 
@@ -386,6 +386,6 @@ footer {
 .song-cover {
   width: 20px; /* La taille de votre pochette */
   height: 20px; /* La taille de votre pochette */
-  margin-right: 5px; /* Réduit la marge à droite de l'image */
+  margin-right: 2px; /* Réduit la marge à droite de l'image */
   vertical-align: middle; /* Aligne verticalement l'image au milieu du texte */
 }
