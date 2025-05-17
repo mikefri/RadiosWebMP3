@@ -373,8 +373,8 @@ footer {
   cursor: pointer; /* Indiquer que le nom est cliquable */
 }
 .song-item {
-  display: flex; /* Assure que l'image et le texte sont sur la même ligne */
-  align-items: center; /* Aligne verticalement l'image et le texte au centre */
+  display: flex;
+  align-items: center;
   padding: 5px;
   cursor: pointer;
 }
@@ -384,12 +384,13 @@ footer {
 }
 
 .song-cover {
-  width: 20px; /* La taille de votre pochette */
-  height: 20px; /* La taille de votre pochette */
-  margin-right: 1px; /* Réduit la marge à droite de l'image */
-  vertical-align: middle; /* Aligne verticalement l'image au milieu du texte */
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  vertical-align: middle;
 }
+
 .song-item span {
-  margin-left: 0; /* Supprime toute marge à gauche du texte */
-  padding-left: 0; /* Supprime tout remplissage à gauche du texte */
+  margin-left: 0;
+  padding-left: 0;
 }
