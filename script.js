@@ -63,22 +63,23 @@ document.addEventListener('DOMContentLoaded', () => {
   function displaySongs(songs) {
     playlistElement.innerHTML = '';
     songs.forEach((song) => {
-      const listItem = document.createElement('li');
-      listItem.classList.add('song-item');
+        const listItem = document.createElement('li');
+        listItem.classList.add('song-item');
 
-      const coverImage = document.createElement('img');
-      coverImage.src = song.artist_image || defaultCoverUrl;
-      coverImage.classList.add('song-cover');
+        // Les lignes suivantes concernent l'affichage de la pochette
+        // const coverImage = document.createElement('img');
+        // coverImage.src = song.artist_image || defaultCoverUrl;
+        // coverImage.classList.add('song-cover');
+        // listItem.appendChild(coverImage);
 
-      const titleArtistSpan = document.createElement('span');
-      titleArtistSpan.textContent = (song.artist ? `${song.artist} - ` : '') + song.title;
-      
-      listItem.appendChild(coverImage);
-      listItem.appendChild(titleArtistSpan);
-      listItem.addEventListener('click', () => handleSongClick(song));
-      playlistElement.appendChild(listItem);
+        const titleArtistSpan = document.createElement('span');
+        titleArtistSpan.textContent = (song.artist ? `${song.artist} - ` : '') + song.title;
+
+        listItem.appendChild(titleArtistSpan);
+        listItem.addEventListener('click', () => handleSongClick(song));
+        playlistElement.appendChild(listItem);
     });
-  }
+}
 
   function handleSongClick(song) {
     playNow(song);
