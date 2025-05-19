@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedPlaylistsList = document.getElementById('savedPlaylistsList');
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabContents = document.querySelectorAll('.tab-content');
-  const exportCurrentPlaylistButton = document.getElementById('exportCurrentPlaylistButton'); // Ajout de l'ID du bouton d'exportation
+  const exportCurrentPlaylistButton = document.getElementById('exportCurrentPlaylistButton'); // Récupération de l'élément ici
 
   let allSongs = [];
   let currentPlaylist = [];
@@ -66,12 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
     songs.forEach((song) => {
       const listItem = document.createElement('li');
       listItem.classList.add('song-item');
-
-      // Les lignes suivantes concernent l'affichage de la pochette
-      // const coverImage = document.createElement('img');
-      // coverImage.src = song.artist_image || defaultCoverUrl;
-      // coverImage.classList.add('song-cover');
-      // listItem.appendChild(coverImage);
 
       const titleArtistSpan = document.createElement('span');
       titleArtistSpan.textContent = (song.artist ? `${song.artist} - ` : '') + song.title;
@@ -311,8 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
   savePlaylistButton.addEventListener('click', savePlaylist);
   loadPlaylistsButton.addEventListener('click', loadSavedPlaylists);
 
-  const exportCurrentPlaylistButton = document.getElementById('exportCurrentPlaylistButton');
-
+  // Écouteur d'événements pour le bouton d'exportation (à l'intérieur de DOMContentLoaded)
   if (exportCurrentPlaylistButton) {
     exportCurrentPlaylistButton.addEventListener('click', () => {
       if (currentPlaylist.length > 0) {
@@ -339,4 +332,6 @@ document.addEventListener('DOMContentLoaded', () => {
   showTab('playlist-section'); // Afficher la liste des chansons par défaut
 });
 
-// La fonction exportAllPlaylists n'est plus nécessaire pour cet objectif précis.
+// Fonction pour exporter la playlist actuelle
+// Elle est maintenant appelée par l'écouteur d'événements
+// et n'a pas besoin d'être globale dans ce contexte.
