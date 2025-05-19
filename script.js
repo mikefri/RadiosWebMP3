@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedPlaylistsList = document.getElementById('savedPlaylistsList');
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabContents = document.querySelectorAll('.tab-content');
+  const exportPlaylistButton = document.getElementById('exportPlaylistButton');
 
   let allSongs = [];
   let currentPlaylist = [];
@@ -332,6 +333,12 @@ function exportPlaylist(playlistName) {
     console.log(`Playlist "${playlistName}" non trouvée dans le localStorage.`);
   }
 }
-
+exportPlaylistButton.addEventListener('click', () => {
+    if (currentPlaylistName) {
+      exportPlaylist(currentPlaylistName);
+    } else {
+      alert("Aucune playlist n'est actuellement chargée.");
+    }
+  });
 // Exemple d'utilisation :
 // exportPlaylist('MaSuperPlaylist');
