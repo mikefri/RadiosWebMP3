@@ -15,37 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabContents = document.querySelectorAll('.tab-content');
   const exportCurrentPlaylistButton = document.getElementById('exportCurrentPlaylistButton'); // Récupération de l'élément ici
-  const importPlaylistFile = document.getElementById('importPlaylistFile');
-  const importPlaylistButton = document.getElementById('importPlaylistButton');
-
-  importPlaylistButton.addEventListener('click', () => {
-    importPlaylistFile.click(); // Simule un clic sur l'input file
-  });
-
-  importPlaylistFile.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const importedPlaylist = JSON.parse(e.target.result);
-          if (Array.isArray(importedPlaylist)) {
-            currentPlaylist = importedPlaylist;
-            currentPlaylistName = prompt("Nommez la playlist importée :") || 'playlist_importée';
-            updateCurrentPlaylistDisplay();
-            console.log(`Playlist "${currentPlaylistName}" importée.`);
-          } else {
-            alert("Le fichier importé n'est pas au format de playlist valide.");
-          }
-        } catch (error) {
-          console.error("Erreur lors de la lecture ou de l'analyse du fichier:", error);
-          alert("Erreur lors de l'importation du fichier.");
-        }
-      };
-      reader.readAsText(file);
-      importPlaylistFile.value = ''; // Réinitialise l'input file
-    }
-  });
 
   let allSongs = [];
   let currentPlaylist = [];
