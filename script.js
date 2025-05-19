@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedPlaylistsList = document.getElementById('savedPlaylistsList');
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabContents = document.querySelectorAll('.tab-content');
-  const exportPlaylistButton = document.getElementById('exportPlaylistButton'); // Récupérez l'élément ici
 
   let allSongs = [];
   let currentPlaylist = [];
@@ -64,23 +63,23 @@ document.addEventListener('DOMContentLoaded', () => {
   function displaySongs(songs) {
     playlistElement.innerHTML = '';
     songs.forEach((song) => {
-      const listItem = document.createElement('li');
-      listItem.classList.add('song-item');
+        const listItem = document.createElement('li');
+        listItem.classList.add('song-item');
 
-      // Les lignes suivantes concernent l'affichage de la pochette
-      // const coverImage = document.createElement('img');
-      // coverImage.src = song.artist_image || defaultCoverUrl;
-      // coverImage.classList.add('song-cover');
-      // listItem.appendChild(coverImage);
+        // Les lignes suivantes concernent l'affichage de la pochette
+        // const coverImage = document.createElement('img');
+        // coverImage.src = song.artist_image || defaultCoverUrl;
+        // coverImage.classList.add('song-cover');
+        // listItem.appendChild(coverImage);
 
-      const titleArtistSpan = document.createElement('span');
-      titleArtistSpan.textContent = (song.artist ? `${song.artist} - ` : '') + song.title;
+        const titleArtistSpan = document.createElement('span');
+        titleArtistSpan.textContent = (song.artist ? `${song.artist} - ` : '') + song.title;
 
-      listItem.appendChild(titleArtistSpan);
-      listItem.addEventListener('click', () => handleSongClick(song));
-      playlistElement.appendChild(listItem);
+        listItem.appendChild(titleArtistSpan);
+        listItem.addEventListener('click', () => handleSongClick(song));
+        playlistElement.appendChild(listItem);
     });
-  }
+}
 
   function handleSongClick(song) {
     playNow(song);
@@ -311,42 +310,37 @@ document.addEventListener('DOMContentLoaded', () => {
   savePlaylistButton.addEventListener('click', savePlaylist);
   loadPlaylistsButton.addEventListener('click', loadSavedPlaylists);
 
-  const exportPlaylistButton = document.getElementById('exportPlaylistButton'); // Récupérez l'élément ici
-
-  if (exportPlaylistButton) {
-    exportPlaylistButton.addEventListener('click', () => {
-      if (currentPlaylistName) {
-        exportPlaylist(currentPlaylistName);
-      } else {
-        alert("Aucune playlist n'est actuellement chargée.");
-      }
-    });
-  } else {
-    console.error("Erreur : L'élément avec l'ID 'exportPlaylistButton' n'a pas été trouvé dans le DOM.");
-  }
-
   loadSongs();
   loadSavedPlaylists(); // Charger les playlists sauvegardées au démarrage
   showTab('playlist-section'); // Afficher la liste des chansons par défaut
 });
 
-function exportPlaylist(playlistName) {
-  const key = `playlist_${playlistName}`;
-  const storedPlaylist = localStorage.getItem(key);
+function exportAllPlaylists() {
+  const allPlaylistsData = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('playlist_')) {
+      const playlistName = key.substring('playlist_'.length);
+      const storedPlaylist = localStorage.getItem(key);
+      if (storedPlaylist) {
+        allPlaylistsData[playlistName] = JSON.parse(storedPlaylist);
+      }
+    }
+  }
 
-  if (storedPlaylist) {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(storedPlaylist);
+  if (Object.keys(allPlaylistsData).length > 0) {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allPlaylistsData));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `${playlistName}.json`);
+    downloadAnchorNode.setAttribute("download", `all_playlists.json`);
     document.body.appendChild(downloadAnchorNode); // required for firefox
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
-    console.log(`Playlist "${playlistName}" exportée.`);
+    console.log("Toutes les playlists sauvegardées ont été exportées.");
   } else {
-    console.log(`Playlist "${playlistName}" non trouvée dans le localStorage.`);
+    console.log("Aucune playlist sauvegardée trouvée dans le localStorage.");
   }
 }
 
 // Exemple d'utilisation :
-// exportPlaylist('MaSuperPlaylist');
+// exportAllPlaylists();
