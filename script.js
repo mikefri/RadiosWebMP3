@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedPlaylistsList = document.getElementById('savedPlaylistsList');
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabContents = document.querySelectorAll('.tab-content');
-  const exportPlaylistButton = document.getElementById('exportPlaylistButton');
+  const exportPlaylistButton = document.getElementById('exportPlaylistButton'); // Récupérez l'élément ici
 
   let allSongs = [];
   let currentPlaylist = [];
@@ -64,23 +64,23 @@ document.addEventListener('DOMContentLoaded', () => {
   function displaySongs(songs) {
     playlistElement.innerHTML = '';
     songs.forEach((song) => {
-        const listItem = document.createElement('li');
-        listItem.classList.add('song-item');
+      const listItem = document.createElement('li');
+      listItem.classList.add('song-item');
 
-        // Les lignes suivantes concernent l'affichage de la pochette
-        // const coverImage = document.createElement('img');
-        // coverImage.src = song.artist_image || defaultCoverUrl;
-        // coverImage.classList.add('song-cover');
-        // listItem.appendChild(coverImage);
+      // Les lignes suivantes concernent l'affichage de la pochette
+      // const coverImage = document.createElement('img');
+      // coverImage.src = song.artist_image || defaultCoverUrl;
+      // coverImage.classList.add('song-cover');
+      // listItem.appendChild(coverImage);
 
-        const titleArtistSpan = document.createElement('span');
-        titleArtistSpan.textContent = (song.artist ? `${song.artist} - ` : '') + song.title;
+      const titleArtistSpan = document.createElement('span');
+      titleArtistSpan.textContent = (song.artist ? `${song.artist} - ` : '') + song.title;
 
-        listItem.appendChild(titleArtistSpan);
-        listItem.addEventListener('click', () => handleSongClick(song));
-        playlistElement.appendChild(listItem);
+      listItem.appendChild(titleArtistSpan);
+      listItem.addEventListener('click', () => handleSongClick(song));
+      playlistElement.appendChild(listItem);
     });
-}
+  }
 
   function handleSongClick(song) {
     playNow(song);
@@ -311,6 +311,20 @@ document.addEventListener('DOMContentLoaded', () => {
   savePlaylistButton.addEventListener('click', savePlaylist);
   loadPlaylistsButton.addEventListener('click', loadSavedPlaylists);
 
+  const exportPlaylistButton = document.getElementById('exportPlaylistButton'); // Récupérez l'élément ici
+
+  if (exportPlaylistButton) {
+    exportPlaylistButton.addEventListener('click', () => {
+      if (currentPlaylistName) {
+        exportPlaylist(currentPlaylistName);
+      } else {
+        alert("Aucune playlist n'est actuellement chargée.");
+      }
+    });
+  } else {
+    console.error("Erreur : L'élément avec l'ID 'exportPlaylistButton' n'a pas été trouvé dans le DOM.");
+  }
+
   loadSongs();
   loadSavedPlaylists(); // Charger les playlists sauvegardées au démarrage
   showTab('playlist-section'); // Afficher la liste des chansons par défaut
@@ -333,12 +347,6 @@ function exportPlaylist(playlistName) {
     console.log(`Playlist "${playlistName}" non trouvée dans le localStorage.`);
   }
 }
-exportPlaylistButton.addEventListener('click', () => {
-    if (currentPlaylistName) {
-      exportPlaylist(currentPlaylistName);
-    } else {
-      alert("Aucune playlist n'est actuellement chargée.");
-    }
-  });
+
 // Exemple d'utilisation :
 // exportPlaylist('MaSuperPlaylist');
