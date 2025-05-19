@@ -314,3 +314,33 @@ document.addEventListener('DOMContentLoaded', () => {
   loadSavedPlaylists(); // Charger les playlists sauvegardées au démarrage
   showTab('playlist-section'); // Afficher la liste des chansons par défaut
 });
+
+function exportAllPlaylists() {
+  const allPlaylistsData = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('playlist_')) {
+      const playlistName = key.substring('playlist_'.length);
+      const storedPlaylist = localStorage.getItem(key);
+      if (storedPlaylist) {
+        allPlaylistsData[playlistName] = JSON.parse(storedPlaylist);
+      }
+    }
+  }
+
+  if (Object.keys(allPlaylistsData).length > 0) {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allPlaylistsData));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", `all_playlists.json`);
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+    console.log("Toutes les playlists sauvegardées ont été exportées.");
+  } else {
+    console.log("Aucune playlist sauvegardée trouvée dans le localStorage.");
+  }
+}
+
+// Exemple d'utilisation :
+// exportAllPlaylists();
