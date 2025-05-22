@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentSongIndex = 0;
   let isDragging = false;
   let currentPlaylistName = null; // Pour suivre le nom de la playlist actuelle
-  const defaultCoverUrl = 'https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png'; // Remplacez par l'URL de votre image par défaut
+  
 
   function showTab(tabId) {
     tabContents.forEach(content => content.style.display = 'none');
@@ -140,9 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const listItem = document.createElement('li');
       listItem.classList.add('song-item');
 
-      const coverImage = document.createElement('img');
-      coverImage.src = song.artist_image || defaultCoverUrl;
-      coverImage.classList.add('song-cover');
+
 
       const titleArtistSpan = document.createElement('span');
       titleArtistSpan.textContent = song.title + (song.artist ? ` - ${song.artist}` : '');
