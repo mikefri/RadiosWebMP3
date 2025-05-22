@@ -1,81 +1,459 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <title>MP3 - RadiosWeb</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-  <script src="script.js"></script>
-</head>
-<body>
-  <div class="top-bar">
-    <h1>🎧 MP3 - RadiosWeb</h1>
-    <div id="currentSongTitle" class="now-playing"></div>
-    <div class="audio-player">
-      <audio id="audioPlayer" controls></audio>
-      <div class="progress-container">
-        <input type="range" id="progressBar" value="0" min="0" max="100">
-        <div class="time-display">
-          <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
-        </div>
-      </div>
-      <button id="shuffleButton" class="controls-button">Lecture Aléatoire</button>
-    </div>
-  </div>
+// Déclarations des variables globales (vérifiez que tous ces IDs existent dans votre HTML)
+const audioPlayer = document.getElementById('audioPlayer');
+const playlistElement = document.getElementById('playlist'); // Pour la liste de toutes les chansons
+const currentPlaylistElement = document.getElementById('currentPlaylist'); // Pour la playlist actuelle
+const currentSongTitleElement = document.getElementById('currentSongTitle');
+const searchInput = document.getElementById('searchInput');
+const shuffleButton = document.getElementById('shuffleButton');
+const savePlaylistButton = document.getElementById('savePlaylistButton');
+const loadPlaylistsButton = document.getElementById('loadPlaylistsButton');
+const exportCurrentPlaylistButton = document.getElementById('exportCurrentPlaylistButton');
+const savedPlaylistsSection = document.getElementById('savedPlaylistsSection');
+const savedPlaylistsList = document.getElementById('savedPlaylistsList'); // Pour la liste des playlists sauvegardées
+const progressBar = document.getElementById('progressBar');
+const currentTimeSpan = document.getElementById('currentTime');
+const durationSpan = document.getElementById('duration');
 
-  <div class="container">
-    <div class="tab-container">
-      <button class="tab-button active" data-tab="playlist-section">Liste des Chansons</button>
-      <button class="tab-button" data-tab="current-playlist-section">Playlist Actuelle</button>
-      <section class="search-bar">
-        <input type="text" id="searchInput" placeholder="Search un titre, un artiste...">
-      </section>
-    </div>
+let allSongs = []; // Contient toutes les chansons disponibles (chargées depuis Synology)
+let currentPlaylist = []; // Contient les chansons de la playlist que l'utilisateur a construite ou chargée
+let currentSongIndex = -1; // Index de la chanson en cours dans currentPlaylist
+let currentPlaylistName = null; // Pour stocker le nom de la playlist chargée depuis la DB
 
-    <section id="playlist-section" class="tab-content">
-      <h2>Liste des Chansons</h2>
-      <ul id="playlist">
-      </ul>
-    </section>
+// --- Fonctions de base du lecteur audio et de la gestion locale ---
 
-    <section id="current-playlist-section" class="tab-content">
-      <h2>Playlist Actuelle</h2>
-      <div class="playlist-actions">
-        <button id="savePlaylistButton" class="controls-button" title="Sauvegarder la Playlist">
-  <i class="fa fa-save" style="color:#ac22d3; margin-right: 6px;"></i>
-  Sauvegarder
-</button>
-        <button id="loadPlaylistsButton" class="controls-button" title="Charger les Playlists">
-  <i class="fa fa-folder-open" style="color:#ac22d3; margin-right: 6px;"></i>
-  Charger
-</button>
+// Charge la liste de toutes les chansons depuis votre Synology
+async function loadSongs() {
+    try {
+        // !!! ASSUREZ-VOUS QUE CETTE URL EST CORRECTE ET ACCESSIBLE !!!
+        const response = await fetch('https://radioswebmp3.synology.me/musique/audios-list.json');
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status} - Échec du chargement de audios-list.json`);
+        }
+        const data = await response.json();
+        allSongs = data.songs;
+        displayAllSongs();
+    } catch (error) {
+        console.error('Erreur lors du chargement des chansons:', error);
+        alert('Impossible de charger la liste des chansons depuis Synology. Vérifiez l\'URL et votre réseau.');
+    }
+}
 
-        <button id="exportCurrentPlaylistButton" class="controls-button" title="Exporter la playlist actuelle">
-  <i class="fa fa-download" style="color:#ac22d3; margin-right: 6px;"></i>
-  Export Playlist
-</button>
+// Affiche toutes les chansons disponibles dans la section "Liste des Chansons"
+function displayAllSongs() {
+    playlistElement.innerHTML = '';
+    allSongs.forEach((song, index) => {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+            <div class="song-info">
+                <span class="song-title">${song.title}</span> - <span class="song-artist">${song.artist}</span>
+            </div>
+            <div class="song-actions">
+                <span class="add-to-playlist" data-index="${index}" title="Ajouter à la playlist actuelle"><i class="fas fa-plus-circle"></i></span>
+                <span class="play-now" data-index="${index}" title="Jouer maintenant"><i class="fas fa-play-circle"></i></span>
+            </div>
+        `;
+        playlistElement.appendChild(listItem);
+    });
+}
 
-  
+// Ajoute une chanson à la playlist actuelle en mémoire
+function addSongToCurrentPlaylist(song) {
+    currentPlaylist.push(song);
+    updateCurrentPlaylistDisplay();
+}
 
-      </div>
-      <ul id="currentPlaylist">
-      </ul>
-      <section id="savedPlaylistsSection" style="display: none;">
-        <h2>Playlists Sauvegardées</h2>
-        <ul id="savedPlaylistsList">
-        </ul>
-      </section>
-    </section>
+// Met à jour l'affichage de la playlist actuelle dans le HTML
+function updateCurrentPlaylistDisplay() {
+    currentPlaylistElement.innerHTML = '';
+    if (currentPlaylist.length === 0) {
+        currentPlaylistElement.innerHTML = '<li class="empty-playlist">Votre playlist est vide. Ajoutez des chansons !</li>';
+        currentSongTitleElement.textContent = 'Aucune chanson en cours';
+        document.title = 'MP3 - RadiosWeb';
+        return;
+    }
+    currentPlaylist.forEach((song, index) => {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+            <div class="song-info">
+                <span class="song-title">${song.title}</span> - <span class="song-artist">${song.artist}</span>
+            </div>
+            <div class="song-actions">
+                <span class="play-current" data-index="${index}" title="Jouer"><i class="fas fa-play-circle"></i></span>
+                <span class="remove-from-playlist" data-index="${index}" title="Supprimer de la playlist"><i class="fas fa-minus-circle"></i></span>
+            </div>
+        `;
+        // Surligne la chanson en cours de lecture
+        if (index === currentSongIndex) {
+            listItem.classList.add('playing');
+        }
+        currentPlaylistElement.appendChild(listItem);
+    });
+    // Fait défiler jusqu'à la chanson en cours si elle est en train de jouer
+    const playingElement = currentPlaylistElement.querySelector('.playing');
+    if (playingElement) {
+        playingElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
 
-    <footer>
-      <p>&copy; 2025 Fait avec ❤️ par Micfri</p>
-    </footer>
-  </div>
-</body>
-</html>
+// Lance la lecture d'une chanson spécifique
+function playSong(song, index) {
+    audioPlayer.src = song.url;
+    currentSongIndex = index;
+    currentSongTitleElement.textContent = `${song.title} - ${song.artist}`;
+    document.title = `${song.title} - ${song.artist}`;
+    audioPlayer.play();
+    updateCurrentPlaylistDisplay(); // Met à jour l'affichage pour surligner
+}
+
+// Passe à la chanson suivante dans la playlist actuelle
+function playNextSong() {
+    if (currentPlaylist.length === 0) return;
+    currentSongIndex = (currentSongIndex + 1) % currentPlaylist.length;
+    playSong(currentPlaylist[currentSongIndex], currentSongIndex);
+}
+
+// Passe à la chanson précédente dans la playlist actuelle
+function playPreviousSong() {
+    if (currentPlaylist.length === 0) return;
+    currentSongIndex = (currentSongIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
+    playSong(currentPlaylist[currentSongIndex], currentSongIndex);
+}
+
+// Mélange la playlist actuelle
+function shufflePlaylist() {
+    for (let i = currentPlaylist.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [currentPlaylist[i], currentPlaylist[j]] = [currentPlaylist[j], currentPlaylist[i]];
+    }
+    currentSongIndex = -1; // Réinitialise l'index après le mélange
+    updateCurrentPlaylistDisplay();
+    alert('Playlist mélangée !');
+}
+
+// Fonction de recherche de chansons
+function searchSongs() {
+    const searchTerm = searchInput.value.toLowerCase();
+    playlistElement.innerHTML = '';
+    const filteredSongs = allSongs.filter(song =>
+        (song.title && song.title.toLowerCase().includes(searchTerm)) || // Vérifier si song.title existe
+        (song.artist && song.artist.toLowerCase().includes(searchTerm))  // Vérifier si song.artist existe
+    );
+    filteredSongs.forEach((song, index) => {
+        const listItem = document.createElement('li');
+        // Trouver l'index original de la chanson dans allSongs pour les actions
+        const originalIndex = allSongs.findIndex(s => s.url === song.url);
+        if (originalIndex === -1) return; // Si la chanson n'est pas trouvée dans allSongs, ne pas l'afficher
+
+        listItem.innerHTML = `
+            <div class="song-info">
+                <span class="song-title">${song.title}</span> - <span class="song-artist">${song.artist}</span>
+            </div>
+            <div class="song-actions">
+                <span class="add-to-playlist" data-index="${originalIndex}" title="Ajouter à la playlist actuelle"><i class="fas fa-plus-circle"></i></span>
+                <span class="play-now" data-index="${originalIndex}" title="Jouer maintenant"><i class="fas fa-play-circle"></i></span>
+            </div>
+        `;
+        playlistElement.appendChild(listItem);
+    });
+}
+
+// Exporte la playlist actuelle dans un fichier JSON téléchargeable
+function exportCurrentPlaylist() {
+    if (currentPlaylist.length === 0) {
+        alert("La playlist actuelle est vide. Impossible d'exporter.");
+        return;
+    }
+    const jsonString = JSON.stringify(currentPlaylist, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const filename = currentPlaylistName ? `${currentPlaylistName}.json` : 'playlist_export.json';
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    alert(`Playlist exportée sous le nom ${filename} !`);
+}
+
+// Fonction pour formater le temps (secondes en MM:SS)
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+}
+
+
+// --- Fonctions de gestion des playlists avec Vercel/Neon ---
+
+// Sauvegarde la playlist actuelle dans la base de données via l'API Vercel
+async function savePlaylistOnVercel() {
+    const playlistName = prompt("Nommez votre playlist :");
+    if (playlistName) {
+        try {
+            const response = await fetch('/api/save-playlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: playlistName, playlist: currentPlaylist }),
+            });
+
+            const result = await response.json();
+            if (response.ok && result.success) {
+                alert("Playlist sauvegardée sur Vercel !");
+                loadSavedPlaylistsFromVercel(); // Rafraîchit la liste des playlists après sauvegarde
+            } else {
+                throw new Error(result.message || `Erreur lors de la sauvegarde: ${response.status} ${response.statusText}`);
+            }
+        } catch (error) {
+            console.error("Erreur lors de la sauvegarde :", error);
+            alert("Impossible de sauvegarder la playlist. Détails : " + error.message);
+        }
+    }
+}
+
+// Charge la liste des playlists sauvegardées depuis la base de données via l'API Vercel
+async function loadSavedPlaylistsFromVercel() {
+    savedPlaylistsList.innerHTML = ''; // Nettoie la liste affichée
+    try {
+        const response = await fetch('/api/load-playlists?action=list');
+        if (!response.ok) {
+            throw new Error(`Échec du chargement de la liste des playlists: ${response.status} ${response.statusText}`);
+        }
+
+        const savedPlaylists = await response.json();
+
+        if (savedPlaylists.length > 0) {
+            savedPlaylists.forEach(pl => {
+                const listItem = document.createElement('li');
+
+                const bullet = document.createElement('span');
+                bullet.classList.add('playlist-bullet');
+                listItem.appendChild(bullet);
+
+                const playlistNameSpan = document.createElement('span');
+                playlistNameSpan.textContent = pl.name;
+                // Quand on clique sur le nom, on charge la playlist par son ID
+                playlistNameSpan.addEventListener('click', () => loadPlaylistFromVercel(pl.id));
+                listItem.appendChild(playlistNameSpan);
+
+                const deleteIcon = document.createElement('span');
+                deleteIcon.classList.add('delete-icon');
+                // Empêche que le clic sur l'icône de suppression ne déclenche aussi le chargement de la playlist
+                deleteIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    deletePlaylistOnVercel(pl.id, pl.name); // Supprime par l'ID et nom pour confirmation
+                });
+                listItem.appendChild(deleteIcon);
+                savedPlaylistsList.appendChild(listItem);
+            });
+            savedPlay playlistsSection.style.display = 'block'; // Affiche la section si des playlists existent
+        } else {
+            savedPlaylistsSection.style.display = 'none'; // Cache si aucune playlist sauvegardée
+        }
+    } catch (error) {
+        console.error("Erreur lors du chargement des playlists depuis Vercel:", error);
+        savedPlaylistsSection.style.display = 'none'; // Cache la section en cas d'erreur aussi
+        alert("Impossible de charger les playlists. Détails : " + error.message);
+    }
+}
+
+// Charge le contenu d'une playlist spécifique depuis la base de données via l'API Vercel
+async function loadPlaylistFromVercel(playlistId) {
+    try {
+        const response = await fetch(`/api/load-playlists?action=get&id=${playlistId}`);
+        if (!response.ok) {
+            throw new Error(`Échec du chargement du contenu de la playlist: ${response.status} ${response.statusText}`);
+        }
+
+        const playlistData = await response.json(); // Récupère { name: "Nom", playlist: [...] }
+        currentPlaylist = playlistData.playlist; // Met à jour la playlist actuellement chargée
+        updateCurrentPlaylistDisplay(); // Met à jour l'affichage
+        currentPlaylistName = playlistData.name; // Met à jour le nom de la playlist actuelle
+        alert(`Playlist "${playlistData.name}" chargée !`);
+        // Passer à l'onglet "Playlist Actuelle" après le chargement
+        document.querySelector('.tab-button[data-tab="current-playlist-section"]').click();
+    } catch (error) {
+        console.error(`Erreur lors du chargement de la playlist ${playlistId} depuis Vercel:`, error);
+        alert(`Impossible de charger la playlist. Détails : ` + error.message);
+    }
+}
+
+// Supprime une playlist de la base de données via l'API Vercel
+async function deletePlaylistOnVercel(playlistId, playlistName) {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer la playlist "${playlistName}" ?`)) {
+        try {
+            const response = await fetch('/api/delete-playlist', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: playlistId }),
+            });
+
+            const result = await response.json();
+            if (response.ok && result.success) {
+                alert(`Playlist "${playlistName}" supprimée.`);
+                loadSavedPlaylistsFromVercel(); // Rafraîchit la liste après suppression
+
+                // Si la playlist supprimée était la playlist actuellement chargée, réinitialiser
+                if (currentPlaylistName === playlistName) {
+                    currentPlaylist = [];
+                    updateCurrentPlaylistDisplay();
+                    audioPlayer.pause();
+                    audioPlayer.src = '';
+                    currentSongTitleElement.textContent = 'Aucune chanson en cours';
+                    document.title = 'MP3 - RadiosWeb';
+                    currentPlaylistName = null;
+                    currentSongIndex = -1; // Réinitialiser l'index
+                }
+            } else {
+                throw new Error(result.message || `Erreur lors de la suppression: ${response.status} ${response.statusText}`);
+            }
+        } catch (error) {
+            console.error("Erreur lors de la suppression :", error);
+            alert("Impossible de supprimer la playlist. Détails : " + error.message);
+        }
+    }
+}
+
+
+// --- Gestionnaire d'événements DOMContentLoaded (appelé au chargement de la page) ---
+document.addEventListener('DOMContentLoaded', () => {
+    loadSongs(); // Charge toutes les chansons disponibles au démarrage
+    loadSavedPlaylistsFromVercel(); // Charge les playlists sauvegardées depuis Neon au démarrage
+
+    // Délégation d'événements pour la liste de toutes les chansons
+    playlistElement.addEventListener('click', (event) => {
+        const target = event.target.closest('span');
+        if (!target) return;
+
+        const listItem = target.closest('li');
+        if (!listItem) return;
+
+        const originalIndex = parseInt(target.dataset.index);
+        if (isNaN(originalIndex) || originalIndex < 0 || originalIndex >= allSongs.length) return;
+
+        const song = allSongs[originalIndex];
+
+        if (target.classList.contains('add-to-playlist')) {
+            addSongToCurrentPlaylist(song);
+        } else if (target.classList.contains('play-now')) {
+            currentPlaylist = [song]; // Crée une playlist d'une seule chanson pour "jouer maintenant"
+            playSong(song, 0);
+            document.querySelector('.tab-button[data-tab="current-playlist-section"]').click(); // Bascule vers l'onglet playlist actuelle
+        }
+    });
+
+    // Délégation d'événements pour la playlist actuelle
+    currentPlaylistElement.addEventListener('click', (event) => {
+        const target = event.target.closest('span');
+        if (!target) return;
+
+        const listItem = target.closest('li');
+        if (!listItem) return;
+
+        const index = parseInt(target.dataset.index);
+        if (isNaN(index) || index < 0 || index >= currentPlaylist.length) return;
+
+        if (target.classList.contains('play-current')) {
+            playSong(currentPlaylist[index], index);
+        } else if (target.classList.contains('remove-from-playlist')) {
+            // Supprime la chanson de la playlist
+            currentPlaylist.splice(index, 1);
+            // Ajuste l'index de la chanson en cours si nécessaire
+            if (index < currentSongIndex) {
+                currentSongIndex--;
+            } else if (index === currentSongIndex) {
+                // Si la chanson supprimée est celle qui était en cours, arrête la lecture
+                audioPlayer.pause();
+                audioPlayer.src = '';
+                currentSongTitleElement.textContent = 'Aucune chanson en cours';
+                document.title = 'MP3 - RadiosWeb';
+                currentSongIndex = -1; // Réinitialise l'index
+            }
+            updateCurrentPlaylistDisplay();
+        }
+    });
+
+    // Écouteurs d'événements pour le lecteur audio
+    audioPlayer.addEventListener('ended', playNextSong); // Joue la chanson suivante quand la précédente est terminée
+
+    // Mise à jour de la barre de progression et du temps
+    audioPlayer.addEventListener('timeupdate', () => {
+        const current = audioPlayer.currentTime;
+        const duration = audioPlayer.duration;
+
+        if (isNaN(duration)) { // Si la durée n'est pas encore disponible
+            progressBar.value = 0;
+            currentTimeSpan.textContent = '0:00';
+            durationSpan.textContent = '0:00';
+        } else {
+            progressBar.value = (current / duration) * 100;
+            currentTimeSpan.textContent = formatTime(current);
+            durationSpan.textContent = formatTime(duration);
+        }
+    });
+
+    // Gère le déplacement du curseur de la barre de progression
+    progressBar.addEventListener('input', () => {
+        const time = (progressBar.value * audioPlayer.duration) / 100;
+        audioPlayer.currentTime = time;
+    });
+
+    // Association des boutons de contrôle
+    const previousButton = document.createElement('button');
+    previousButton.id = 'previousButton';
+    previousButton.classList.add('controls-button');
+    previousButton.innerHTML = '<i class="fas fa-backward"></i> Précédent';
+    previousButton.addEventListener('click', playPreviousSong);
+
+    const nextButton = document.createElement('button');
+    nextButton.id = 'nextButton';
+    nextButton.classList.add('controls-button');
+    nextButton.innerHTML = 'Suivant <i class="fas fa-forward"></i>';
+    nextButton.addEventListener('click', playNextSong);
+
+    // Insérer les boutons dans le HTML (ajustez l'emplacement si nécessaire)
+    const audioPlayerDiv = document.querySelector('.audio-player');
+    if (audioPlayerDiv) {
+        audioPlayerDiv.appendChild(previousButton);
+        audioPlayerDiv.appendChild(nextButton);
+    }
+
+    // Association des écouteurs pour la recherche et le mélange
+    searchInput.addEventListener('input', searchSongs);
+    shuffleButton.addEventListener('click', shufflePlaylist);
+
+    // Association des boutons de sauvegarde/chargement/export avec les nouvelles fonctions
+    savePlaylistButton.addEventListener('click', savePlaylistOnVercel);
+    loadPlaylistsButton.addEventListener('click', loadSavedPlaylistsFromVercel);
+    exportCurrentPlaylistButton.addEventListener('click', exportCurrentPlaylist);
+
+    // Gestion des onglets (copié de votre HTML)
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const tabId = button.dataset.tab;
+
+            // Enlever la classe 'active' de tous les boutons et contenus
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+
+            // Ajouter la classe 'active' au bouton cliqué
+            button.classList.add('active');
+
+            // Afficher le contenu de l'onglet correspondant
+            document.getElementById(tabId).style.display = 'block';
+
+            // Si c'est l'onglet "Playlist Actuelle" et que le bouton charger est celui qui a déclenché le changement,
+            // ou si on clique juste sur l'onglet "Playlist Actuelle", recharger les playlists sauvegardées
+            // (Assure que la liste des playlists sauvegardées est toujours à jour)
+            if (tabId === 'current-playlist-section') {
+                loadSavedPlaylistsFromVercel();
+            }
+        });
+    });
+
+    // Activation de l'onglet "Liste des Chansons" par défaut au chargement
+    document.querySelector('.tab-button[data-tab="playlist-section"]').click();
+});
