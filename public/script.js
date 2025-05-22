@@ -249,7 +249,7 @@ async function loadSavedPlaylistsFromVercel() {
                 listItem.appendChild(deleteIcon);
                 savedPlaylistsList.appendChild(listItem);
             });
-            savedPlay playlistsSection.style.display = 'block'; // Affiche la section si des playlists existent
+            savedPlaylistsSection.style.display = 'block'; // Affiche la section si des playlists existent
         } else {
             savedPlaylistsSection.style.display = 'none'; // Cache si aucune playlist sauvegardée
         }
