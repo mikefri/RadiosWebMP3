@@ -14,14 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedPlaylistsList = document.getElementById('savedPlaylistsList');
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabContents = document.querySelectorAll('.tab-content');
-  const exportCurrentPlaylistButton = document.getElementById('exportCurrentPlaylistButton'); // Récupération de l'élément ici
 
   let allSongs = [];
   let currentPlaylist = [];
   let currentSongIndex = 0;
   let isDragging = false;
   let currentPlaylistName = null; // Pour suivre le nom de la playlist actuelle
-  
 
   function showTab(tabId) {
     tabContents.forEach(content => content.style.display = 'none');
@@ -65,12 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     playlistElement.innerHTML = '';
     songs.forEach((song) => {
       const listItem = document.createElement('li');
-      listItem.classList.add('song-item');
-
-      const titleArtistSpan = document.createElement('span');
-      titleArtistSpan.textContent = (song.artist ? `${song.artist} - ` : '') + song.title;
-
-      listItem.appendChild(titleArtistSpan);
+      listItem.textContent = song.title + (song.artist ? ` - ${song.artist}` : '');
       listItem.addEventListener('click', () => handleSongClick(song));
       playlistElement.appendChild(listItem);
     });
@@ -138,19 +131,10 @@ document.addEventListener('DOMContentLoaded', () => {
     currentPlaylistElement.innerHTML = '';
     currentPlaylist.forEach((song, index) => {
       const listItem = document.createElement('li');
-      listItem.classList.add('song-item');
-
-
-
-      const titleArtistSpan = document.createElement('span');
-      titleArtistSpan.textContent = song.title + (song.artist ? ` - ${song.artist}` : '');
-
+      listItem.textContent = song.title + (song.artist ? ` - ${song.artist}` : '');
       const removeButton = document.createElement('button');
       removeButton.textContent = 'Supprimer';
       removeButton.addEventListener('click', () => removeFromPlaylist(index));
-
-      listItem.appendChild(coverImage);
-      listItem.appendChild(titleArtistSpan);
       listItem.appendChild(removeButton);
       listItem.addEventListener('click', (event) => {
         if (event.target !== removeButton) {
@@ -303,33 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
   savePlaylistButton.addEventListener('click', savePlaylist);
   loadPlaylistsButton.addEventListener('click', loadSavedPlaylists);
 
-  // Écouteur d'événements pour le bouton d'exportation (à l'intérieur de DOMContentLoaded)
-  if (exportCurrentPlaylistButton) {
-    exportCurrentPlaylistButton.addEventListener('click', () => {
-      if (currentPlaylist.length > 0) {
-        const playlistName = currentPlaylistName || 'playlist_courante';
-        const playlistData = JSON.stringify(currentPlaylist);
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(playlistData);
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", `${playlistName}.json`);
-        document.body.appendChild(downloadAnchorNode); // required for firefox
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
-        console.log(`Playlist "${playlistName}" exportée.`);
-      } else {
-        alert("Aucune chanson n'est dans la playlist actuelle.");
-      }
-    });
-  } else {
-    console.error("Erreur : L'élément avec l'ID 'exportCurrentPlaylistButton' n'a pas été trouvé dans le DOM.");
-  }
-
   loadSongs();
   loadSavedPlaylists(); // Charger les playlists sauvegardées au démarrage
   showTab('playlist-section'); // Afficher la liste des chansons par défaut
 });
-
-// Fonction pour exporter la playlist actuelle
-// Elle est maintenant appelée par l'écouteur d'événements
-// et n'a pas besoin d'être globale dans ce contexte.
