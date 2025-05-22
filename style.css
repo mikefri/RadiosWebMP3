@@ -380,12 +380,7 @@ footer {
   justify-content: flex-start; /* Ajout de flex-start */
 }
 
-.song-cover {
-  width: 20px !important;
-  height: 20px !important;
-  margin-right: 1px !important;
-  vertical-align: middle !important;
-}
+
 
 .song-item span {
   margin-left: 0 !important;
