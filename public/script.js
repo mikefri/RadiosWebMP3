@@ -30,7 +30,20 @@ async function loadSongs() {
             throw new Error(`Erreur HTTP: ${response.status} - Échec du chargement de audios-list.json`);
         }
         const data = await response.json();
-        allSongs = data.songs;
+        console.log("Contenu JSON reçu:", data); // Pour le débogage: Affiche le JSON brut
+        
+        // CORRECTION ICI : Votre JSON est un tableau direct, pas un objet avec une propriété 'songs'
+        if (Array.isArray(data)) {
+            allSongs = data;
+        } else {
+            // Au cas où la structure changerait ou s'il y a une erreur inattendue
+            console.error("La structure du JSON n'est pas un tableau direct:", data);
+            alert("Erreur: La liste des chansons n'est pas au format attendu (tableau).");
+            return; // Arrêter l'exécution si le format est incorrect
+        }
+        
+        console.log("allSongs après assignation:", allSongs); // Pour le débogage: Affiche le tableau allSongs
+
         displayAllSongs();
     } catch (error) {
         console.error('Erreur lors du chargement des chansons:', error);
@@ -41,11 +54,22 @@ async function loadSongs() {
 // Affiche toutes les chansons disponibles dans la section "Liste des Chansons"
 function displayAllSongs() {
     playlistElement.innerHTML = '';
+    // Assurez-vous que allSongs est bien un tableau avant d'appeler forEach
+    if (!Array.isArray(allSongs) || allSongs.length === 0) {
+        playlistElement.innerHTML = '<li class="empty-list">Aucune chanson à afficher.</li>';
+        return;
+    }
+
     allSongs.forEach((song, index) => {
         const listItem = document.createElement('li');
+        // Utilisation de song.path pour le lecteur
+        // Vérification de l'existence des propriétés pour éviter les erreurs
+        const title = song.title || 'Titre inconnu';
+        const artist = song.artist || 'Artiste inconnu';
+
         listItem.innerHTML = `
             <div class="song-info">
-                <span class="song-title">${song.title}</span> - <span class="song-artist">${song.artist}</span>
+                <span class="song-title">${title}</span> - <span class="song-artist">${artist}</span>
             </div>
             <div class="song-actions">
                 <span class="add-to-playlist" data-index="${index}" title="Ajouter à la playlist actuelle"><i class="fas fa-plus-circle"></i></span>
@@ -73,9 +97,12 @@ function updateCurrentPlaylistDisplay() {
     }
     currentPlaylist.forEach((song, index) => {
         const listItem = document.createElement('li');
+        const title = song.title || 'Titre inconnu';
+        const artist = song.artist || 'Artiste inconnu';
+
         listItem.innerHTML = `
             <div class="song-info">
-                <span class="song-title">${song.title}</span> - <span class="song-artist">${song.artist}</span>
+                <span class="song-title">${title}</span> - <span class="song-artist">${artist}</span>
             </div>
             <div class="song-actions">
                 <span class="play-current" data-index="${index}" title="Jouer"><i class="fas fa-play-circle"></i></span>
@@ -97,10 +124,15 @@ function updateCurrentPlaylistDisplay() {
 
 // Lance la lecture d'une chanson spécifique
 function playSong(song, index) {
-    audioPlayer.src = song.url;
+    if (!song || !song.path) { // Vérifie si la chanson ou son chemin est valide
+        console.error("Chanson invalide ou chemin manquant:", song);
+        alert("Impossible de lire cette chanson. Le chemin du fichier est manquant.");
+        return;
+    }
+    audioPlayer.src = song.path; // Utilise 'path' comme dans votre JSON
     currentSongIndex = index;
-    currentSongTitleElement.textContent = `${song.title} - ${song.artist}`;
-    document.title = `${song.title} - ${song.artist}`;
+    currentSongTitleElement.textContent = `${song.title || 'Titre inconnu'} - ${song.artist || 'Artiste inconnu'}`;
+    document.title = `${song.title || 'Titre inconnu'} - ${song.artist || 'Artiste inconnu'}`;
     audioPlayer.play();
     updateCurrentPlaylistDisplay(); // Met à jour l'affichage pour surligner
 }
@@ -121,6 +153,10 @@ function playPreviousSong() {
 
 // Mélange la playlist actuelle
 function shufflePlaylist() {
+    if (currentPlaylist.length <= 1) {
+        alert('La playlist doit contenir au moins deux chansons pour être mélangée.');
+        return;
+    }
     for (let i = currentPlaylist.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [currentPlaylist[i], currentPlaylist[j]] = [currentPlaylist[j], currentPlaylist[i]];
@@ -134,19 +170,36 @@ function shufflePlaylist() {
 function searchSongs() {
     const searchTerm = searchInput.value.toLowerCase();
     playlistElement.innerHTML = '';
+    
+    // Assurez-vous que allSongs est un tableau valide avant de filtrer
+    if (!Array.isArray(allSongs) || allSongs.length === 0) {
+        playlistElement.innerHTML = '<li class="empty-list">Aucune chanson disponible pour la recherche.</li>';
+        return;
+    }
+
     const filteredSongs = allSongs.filter(song =>
-        (song.title && song.title.toLowerCase().includes(searchTerm)) || // Vérifier si song.title existe
-        (song.artist && song.artist.toLowerCase().includes(searchTerm))  // Vérifier si song.artist existe
+        (song.title && song.title.toLowerCase().includes(searchTerm)) || 
+        (song.artist && song.artist.toLowerCase().includes(searchTerm))
     );
+
+    if (filteredSongs.length === 0) {
+        playlistElement.innerHTML = '<li class="empty-list">Aucun résultat trouvé.</li>';
+        return;
+    }
+
     filteredSongs.forEach((song, index) => {
         const listItem = document.createElement('li');
         // Trouver l'index original de la chanson dans allSongs pour les actions
-        const originalIndex = allSongs.findIndex(s => s.url === song.url);
-        if (originalIndex === -1) return; // Si la chanson n'est pas trouvée dans allSongs, ne pas l'afficher
+        // Utilisation de song.path comme identifiant unique
+        const originalIndex = allSongs.findIndex(s => s.path === song.path); 
+        if (originalIndex === -1) return; // Si la chanson n'est pas trouvée dans allSongs, ne pas l'afficher (cas rare)
+
+        const title = song.title || 'Titre inconnu';
+        const artist = song.artist || 'Artiste inconnu';
 
         listItem.innerHTML = `
             <div class="song-info">
-                <span class="song-title">${song.title}</span> - <span class="song-artist">${song.artist}</span>
+                <span class="song-title">${title}</span> - <span class="song-artist">${artist}</span>
             </div>
             <div class="song-actions">
                 <span class="add-to-playlist" data-index="${originalIndex}" title="Ajouter à la playlist actuelle"><i class="fas fa-plus-circle"></i></span>
@@ -189,6 +242,10 @@ function formatTime(seconds) {
 
 // Sauvegarde la playlist actuelle dans la base de données via l'API Vercel
 async function savePlaylistOnVercel() {
+    if (currentPlaylist.length === 0) {
+        alert("Votre playlist actuelle est vide. Ajoutez des chansons avant de la sauvegarder.");
+        return;
+    }
     const playlistName = prompt("Nommez votre playlist :");
     if (playlistName) {
         try {
@@ -216,7 +273,18 @@ async function savePlaylistOnVercel() {
 
 // Charge la liste des playlists sauvegardées depuis la base de données via l'API Vercel
 async function loadSavedPlaylistsFromVercel() {
-    savedPlaylistsList.innerHTML = ''; // Nettoie la liste affichée
+    // Vérifier si savedPlaylistsList existe avant de manipuler innerHTML
+    if (savedPlaylistsList) {
+        savedPlaylistsList.innerHTML = ''; // Nettoie la liste affichée
+    } else {
+        console.warn("L'élément 'savedPlaylistsList' n'a pas été trouvé. Assurez-vous que l'ID est correct dans votre HTML.");
+        // Gérer le cas où l'élément n'existe pas, peut-être ne pas afficher la section
+        if (savedPlaylistsSection) {
+            savedPlaylistsSection.style.display = 'none';
+        }
+        return;
+    }
+
     try {
         const response = await fetch('/api/load-playlists?action=list');
         if (!response.ok) {
@@ -241,6 +309,7 @@ async function loadSavedPlaylistsFromVercel() {
 
                 const deleteIcon = document.createElement('span');
                 deleteIcon.classList.add('delete-icon');
+                deleteIcon.innerHTML = '<i class="fas fa-trash"></i>'; // Ajout d'une icône de suppression
                 // Empêche que le clic sur l'icône de suppression ne déclenche aussi le chargement de la playlist
                 deleteIcon.addEventListener('click', (event) => {
                     event.stopPropagation();
@@ -249,13 +318,19 @@ async function loadSavedPlaylistsFromVercel() {
                 listItem.appendChild(deleteIcon);
                 savedPlaylistsList.appendChild(listItem);
             });
-            savedPlaylistsSection.style.display = 'block'; // Affiche la section si des playlists existent
+            if (savedPlaylistsSection) {
+                savedPlaylistsSection.style.display = 'block'; // Affiche la section si des playlists existent
+            }
         } else {
-            savedPlaylistsSection.style.display = 'none'; // Cache si aucune playlist sauvegardée
+            if (savedPlaylistsSection) {
+                savedPlaylistsSection.style.display = 'none'; // Cache si aucune playlist sauvegardée
+            }
         }
     } catch (error) {
         console.error("Erreur lors du chargement des playlists depuis Vercel:", error);
-        savedPlaylistsSection.style.display = 'none'; // Cache la section en cas d'erreur aussi
+        if (savedPlaylistsSection) {
+            savedPlaylistsSection.style.display = 'none'; // Cache la section en cas d'erreur aussi
+        }
         alert("Impossible de charger les playlists. Détails : " + error.message);
     }
 }
@@ -324,111 +399,133 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSavedPlaylistsFromVercel(); // Charge les playlists sauvegardées depuis Neon au démarrage
 
     // Délégation d'événements pour la liste de toutes les chansons
-    playlistElement.addEventListener('click', (event) => {
-        const target = event.target.closest('span');
-        if (!target) return;
+    if (playlistElement) { // Vérifie si l'élément existe
+        playlistElement.addEventListener('click', (event) => {
+            const target = event.target.closest('span');
+            if (!target) return;
 
-        const listItem = target.closest('li');
-        if (!listItem) return;
+            const listItem = target.closest('li');
+            if (!listItem) return;
 
-        const originalIndex = parseInt(target.dataset.index);
-        if (isNaN(originalIndex) || originalIndex < 0 || originalIndex >= allSongs.length) return;
+            const originalIndex = parseInt(target.dataset.index);
+            if (isNaN(originalIndex) || originalIndex < 0 || originalIndex >= allSongs.length) return;
 
-        const song = allSongs[originalIndex];
+            const song = allSongs[originalIndex];
 
-        if (target.classList.contains('add-to-playlist')) {
-            addSongToCurrentPlaylist(song);
-        } else if (target.classList.contains('play-now')) {
-            currentPlaylist = [song]; // Crée une playlist d'une seule chanson pour "jouer maintenant"
-            playSong(song, 0);
-            document.querySelector('.tab-button[data-tab="current-playlist-section"]').click(); // Bascule vers l'onglet playlist actuelle
-        }
-    });
+            if (target.classList.contains('add-to-playlist')) {
+                addSongToCurrentPlaylist(song);
+            } else if (target.classList.contains('play-now')) {
+                currentPlaylist = [song]; // Crée une playlist d'une seule chanson pour "jouer maintenant"
+                playSong(song, 0);
+                // Bascule vers l'onglet playlist actuelle si le bouton existe
+                const currentPlaylistTabButton = document.querySelector('.tab-button[data-tab="current-playlist-section"]');
+                if (currentPlaylistTabButton) {
+                    currentPlaylistTabButton.click();
+                }
+            }
+        });
+    }
 
     // Délégation d'événements pour la playlist actuelle
-    currentPlaylistElement.addEventListener('click', (event) => {
-        const target = event.target.closest('span');
-        if (!target) return;
+    if (currentPlaylistElement) { // Vérifie si l'élément existe
+        currentPlaylistElement.addEventListener('click', (event) => {
+            const target = event.target.closest('span');
+            if (!target) return;
 
-        const listItem = target.closest('li');
-        if (!listItem) return;
+            const listItem = target.closest('li');
+            if (!listItem) return;
 
-        const index = parseInt(target.dataset.index);
-        if (isNaN(index) || index < 0 || index >= currentPlaylist.length) return;
+            const index = parseInt(target.dataset.index);
+            if (isNaN(index) || index < 0 || index >= currentPlaylist.length) return;
 
-        if (target.classList.contains('play-current')) {
-            playSong(currentPlaylist[index], index);
-        } else if (target.classList.contains('remove-from-playlist')) {
-            // Supprime la chanson de la playlist
-            currentPlaylist.splice(index, 1);
-            // Ajuste l'index de la chanson en cours si nécessaire
-            if (index < currentSongIndex) {
-                currentSongIndex--;
-            } else if (index === currentSongIndex) {
-                // Si la chanson supprimée est celle qui était en cours, arrête la lecture
-                audioPlayer.pause();
-                audioPlayer.src = '';
-                currentSongTitleElement.textContent = 'Aucune chanson en cours';
-                document.title = 'MP3 - RadiosWeb';
-                currentSongIndex = -1; // Réinitialise l'index
+            if (target.classList.contains('play-current')) {
+                playSong(currentPlaylist[index], index);
+            } else if (target.classList.contains('remove-from-playlist')) {
+                // Supprime la chanson de la playlist
+                currentPlaylist.splice(index, 1);
+                // Ajuste l'index de la chanson en cours si nécessaire
+                if (index < currentSongIndex) {
+                    currentSongIndex--;
+                } else if (index === currentSongIndex) {
+                    // Si la chanson supprimée est celle qui était en cours, arrête la lecture
+                    audioPlayer.pause();
+                    audioPlayer.src = '';
+                    currentSongTitleElement.textContent = 'Aucune chanson en cours';
+                    document.title = 'MP3 - RadiosWeb';
+                    currentSongIndex = -1; // Réinitialise l'index
+                }
+                updateCurrentPlaylistDisplay();
             }
-            updateCurrentPlaylistDisplay();
-        }
-    });
+        });
+    }
 
     // Écouteurs d'événements pour le lecteur audio
-    audioPlayer.addEventListener('ended', playNextSong); // Joue la chanson suivante quand la précédente est terminée
+    if (audioPlayer) { // Vérifie si l'élément existe
+        audioPlayer.addEventListener('ended', playNextSong); // Joue la chanson suivante quand la précédente est terminée
 
-    // Mise à jour de la barre de progression et du temps
-    audioPlayer.addEventListener('timeupdate', () => {
-        const current = audioPlayer.currentTime;
-        const duration = audioPlayer.duration;
+        // Mise à jour de la barre de progression et du temps
+        audioPlayer.addEventListener('timeupdate', () => {
+            const current = audioPlayer.currentTime;
+            const duration = audioPlayer.duration;
 
-        if (isNaN(duration)) { // Si la durée n'est pas encore disponible
-            progressBar.value = 0;
-            currentTimeSpan.textContent = '0:00';
-            durationSpan.textContent = '0:00';
-        } else {
-            progressBar.value = (current / duration) * 100;
-            currentTimeSpan.textContent = formatTime(current);
-            durationSpan.textContent = formatTime(duration);
+            if (isNaN(duration)) { // Si la durée n'est pas encore disponible
+                if (progressBar) progressBar.value = 0;
+                if (currentTimeSpan) currentTimeSpan.textContent = '0:00';
+                if (durationSpan) durationSpan.textContent = '0:00';
+            } else {
+                if (progressBar) progressBar.value = (current / duration) * 100;
+                if (currentTimeSpan) currentTimeSpan.textContent = formatTime(current);
+                if (durationSpan) durationSpan.textContent = formatTime(duration);
+            }
+        });
+
+        // Gère le déplacement du curseur de la barre de progression
+        if (progressBar) { // Vérifie si l'élément existe
+            progressBar.addEventListener('input', () => {
+                const time = (progressBar.value * audioPlayer.duration) / 100;
+                audioPlayer.currentTime = time;
+            });
         }
-    });
+    }
 
-    // Gère le déplacement du curseur de la barre de progression
-    progressBar.addEventListener('input', () => {
-        const time = (progressBar.value * audioPlayer.duration) / 100;
-        audioPlayer.currentTime = time;
-    });
-
-    // Association des boutons de contrôle
-    const previousButton = document.createElement('button');
-    previousButton.id = 'previousButton';
-    previousButton.classList.add('controls-button');
-    previousButton.innerHTML = '<i class="fas fa-backward"></i> Précédent';
-    previousButton.addEventListener('click', playPreviousSong);
-
-    const nextButton = document.createElement('button');
-    nextButton.id = 'nextButton';
-    nextButton.classList.add('controls-button');
-    nextButton.innerHTML = 'Suivant <i class="fas fa-forward"></i>';
-    nextButton.addEventListener('click', playNextSong);
-
-    // Insérer les boutons dans le HTML (ajustez l'emplacement si nécessaire)
+    // Association des boutons de contrôle (Précédent/Suivant)
+    // Ces boutons sont créés dynamiquement, assurez-vous que l'endroit où ils sont ajoutés existe.
     const audioPlayerDiv = document.querySelector('.audio-player');
-    if (audioPlayerDiv) {
+    if (audioPlayerDiv) { // Vérifie si la div existe pour ajouter les boutons
+        const previousButton = document.createElement('button');
+        previousButton.id = 'previousButton';
+        previousButton.classList.add('controls-button');
+        previousButton.innerHTML = '<i class="fas fa-backward"></i> Précédent';
+        previousButton.addEventListener('click', playPreviousSong);
         audioPlayerDiv.appendChild(previousButton);
+
+        const nextButton = document.createElement('button');
+        nextButton.id = 'nextButton';
+        nextButton.classList.add('controls-button');
+        nextButton.innerHTML = 'Suivant <i class="fas fa-forward"></i>';
+        nextButton.addEventListener('click', playNextSong);
         audioPlayerDiv.appendChild(nextButton);
     }
 
+
     // Association des écouteurs pour la recherche et le mélange
-    searchInput.addEventListener('input', searchSongs);
-    shuffleButton.addEventListener('click', shufflePlaylist);
+    if (searchInput) { // Vérifie si l'élément existe
+        searchInput.addEventListener('input', searchSongs);
+    }
+    if (shuffleButton) { // Vérifie si l'élément existe
+        shuffleButton.addEventListener('click', shufflePlaylist);
+    }
 
     // Association des boutons de sauvegarde/chargement/export avec les nouvelles fonctions
-    savePlaylistButton.addEventListener('click', savePlaylistOnVercel);
-    loadPlaylistsButton.addEventListener('click', loadSavedPlaylistsFromVercel);
-    exportCurrentPlaylistButton.addEventListener('click', exportCurrentPlaylist);
+    if (savePlaylistButton) { // Vérifie si l'élément existe
+        savePlaylistButton.addEventListener('click', savePlaylistOnVercel);
+    }
+    if (loadPlaylistsButton) { // Vérifie si l'élément existe
+        loadPlaylistsButton.addEventListener('click', loadSavedPlaylistsFromVercel);
+    }
+    if (exportCurrentPlaylistButton) { // Vérifie si l'élément existe
+        exportCurrentPlaylistButton.addEventListener('click', exportCurrentPlaylist);
+    }
 
     // Gestion des onglets (copié de votre HTML)
     document.querySelectorAll('.tab-button').forEach(button => {
@@ -443,7 +540,10 @@ document.addEventListener('DOMContentLoaded', () => {
             button.classList.add('active');
 
             // Afficher le contenu de l'onglet correspondant
-            document.getElementById(tabId).style.display = 'block';
+            const targetTabContent = document.getElementById(tabId);
+            if (targetTabContent) {
+                targetTabContent.style.display = 'block';
+            }
 
             // Si c'est l'onglet "Playlist Actuelle" et que le bouton charger est celui qui a déclenché le changement,
             // ou si on clique juste sur l'onglet "Playlist Actuelle", recharger les playlists sauvegardées
@@ -455,5 +555,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Activation de l'onglet "Liste des Chansons" par défaut au chargement
-    document.querySelector('.tab-button[data-tab="playlist-section"]').click();
+    const defaultTabButton = document.querySelector('.tab-button[data-tab="playlist-section"]');
+    if (defaultTabButton) {
+        defaultTabButton.click();
+    }
 });
