@@ -347,25 +347,7 @@ footer {
   margin-right: 8px;
 }
 
-.delete-icon {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  background-color: red;
-  color: white;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  user-select: none;
-  margin-left: 8px;
-}
 
-.delete-icon::before {
-  content: "−";
-}
 
 /* Style pour que le nom de la playlist occupe l'espace entre la puce et l'icône */
 #savedPlaylistsList li > span:nth-child(2) {
