@@ -1,33 +1,44 @@
-import { sql } from '@vercel/postgres';
+// api/save-playlist.js
+import { Pool } from '@neondatabase/serverless'; // Assurez-vous d'avoir cette dépendance installée
 
 export default async function handler(req, res) {
-  // Autorise uniquement les requêtes POST pour sauvegarder
-  if (req.method === 'POST') {
-    // Extrait le nom et le contenu de la playlist du corps de la requête JSON
-    const { name, playlist } = req.body;
+    if (req.method === 'POST') {
+        const { name, playlist } = req.body;
 
-    // Vérifie si les données essentielles sont présentes
-    if (!name || !playlist) {
-      return res.status(400).json({ success: false, message: 'Nom de playlist ou contenu manquant.' });
-    }
+        if (!name || !playlist) {
+            return res.status(400).json({ success: false, message: 'Nom de playlist ou contenu manquant.' });
+        }
 
-    try {
-      // Insère la playlist dans la table 'playlists'
-      // name est une colonne TEXT, content est une colonne JSONB (stocke directement l'objet JSON)
-      await sql`
-        INSERT INTO playlists (name, content)
-        VALUES (${name}, ${JSON.stringify(playlist)})
-      `;
-      // Renvoie une réponse de succès au frontend
-      return res.status(200).json({ success: true, message: 'Playlist sauvegardée.' });
-    } catch (error) {
-      // Gère les erreurs de base de données
-      console.error("Erreur de BDD lors de la sauvegarde :", error);
-      return res.status(500).json({ success: false, message: 'Erreur serveur lors de la sauvegarde.' });
+        try {
+            const pool = new Pool({
+                connectionString: process.env.DATABASE_URL,
+            });
+
+            // Vérifier si une playlist avec ce nom existe déjà
+            const checkResult = await pool.query('SELECT id FROM playlists WHERE name = $1', [name]);
+
+            if (checkResult.rows.length > 0) {
+                // Si la playlist existe, la mettre à jour (UPDATE)
+                await pool.query(
+                    'UPDATE playlists SET content = $1, created_at = NOW() WHERE name = $2',
+                    [JSON.stringify(playlist), name] // Utilise 'content' ici
+                );
+                res.status(200).json({ success: true, message: 'Playlist mise à jour avec succès.' });
+            } else {
+                // Sinon, insérer une nouvelle playlist (INSERT)
+                await pool.query(
+                    'INSERT INTO playlists (name, content) VALUES ($1, $2)',
+                    [name, JSON.stringify(playlist)] // Utilise 'content' ici
+                );
+                res.status(201).json({ success: true, message: 'Playlist sauvegardée avec succès.' });
+            }
+
+            await pool.end();
+        } catch (error) {
+            console.error('Erreur dans l\'API save-playlist:', error);
+            res.status(500).json({ success: false, message: 'Erreur interne du serveur lors de la sauvegarde de la playlist.' });
+        }
+    } else {
+        res.status(405).json({ success: false, message: 'Méthode non autorisée.' });
     }
-  } else {
-    // Si la méthode HTTP n'est pas POST, renvoie une erreur 405 (Méthode non autorisée)
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
-  }
 }

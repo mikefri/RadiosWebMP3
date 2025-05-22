@@ -1,28 +1,33 @@
-import { sql } from '@vercel/postgres';
+// api/delete-playlist.js
+import { Pool } from '@neondatabase/serverless'; // Assurez-vous d'avoir cette dépendance installée
 
 export default async function handler(req, res) {
-  // Autorise uniquement les requêtes POST pour la suppression (peut être DELETE aussi)
-  if (req.method === 'POST') {
-    // Extrait l'ID de la playlist à supprimer du corps de la requête JSON
-    const { id } = req.body;
+    if (req.method === 'POST') {
+        const { id } = req.body;
 
-    // Vérifie si l'ID est présent
-    if (!id) {
-      return res.status(400).json({ success: false, message: 'ID de playlist manquant.' });
-    }
+        if (!id) {
+            return res.status(400).json({ success: false, message: 'ID de playlist manquant.' });
+        }
 
-    try {
-      // Supprime la playlist de la table par son ID
-      await sql`DELETE FROM playlists WHERE id = ${id}`;
-      // Renvoie une réponse de succès
-      return res.status(200).json({ success: true, message: 'Playlist supprimée.' });
-    } catch (error) {
-      console.error("Erreur de BDD lors de la suppression :", error);
-      return res.status(500).json({ success: false, message: 'Erreur serveur lors de la suppression.' });
+        try {
+            const pool = new Pool({
+                connectionString: process.env.DATABASE_URL,
+            });
+
+            const result = await pool.query('DELETE FROM playlists WHERE id = $1', [id]);
+
+            if (result.rowCount > 0) {
+                res.status(200).json({ success: true, message: 'Playlist supprimée avec succès.' });
+            } else {
+                res.status(404).json({ success: false, message: 'Playlist non trouvée ou déjà supprimée.' });
+            }
+
+            await pool.end();
+        } catch (error) {
+            console.error('Erreur dans l\'API delete-playlist:', error);
+            res.status(500).json({ success: false, message: 'Erreur interne du serveur lors de la suppression de la playlist.' });
+        }
+    } else {
+        res.status(405).json({ success: false, message: 'Méthode non autorisée.' });
     }
-  } else {
-    // Méthode non autorisée
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
-  }
 }
