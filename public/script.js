@@ -309,7 +309,7 @@ async function loadSavedPlaylistsFromVercel() {
 
                 const deleteIcon = document.createElement('span');
                 deleteIcon.classList.add('delete-icon');
-                deleteIcon.innerHTML = '<i class="fas fa-trash"></i>'; // Ajout d'une icône de suppression
+                deleteIcon.innerHTML = '<i class="fas fa-trash" style="color: red;"></i>'; // Ajout du style directement
                 // Empêche que le clic sur l'icône de suppression ne déclenche aussi le chargement de la playlist
                 deleteIcon.addEventListener('click', (event) => {
                     event.stopPropagation();
