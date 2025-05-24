@@ -495,14 +495,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const previousButton = document.createElement('button');
         previousButton.id = 'previousButton';
         previousButton.classList.add('controls-button');
-        previousButton.innerHTML = '<i class="fas fa-backward"></i> Précédent';
+        previousButton.innerHTML = '<i class="fas fa-backward"></i>';
         previousButton.addEventListener('click', playPreviousSong);
         audioPlayerDiv.appendChild(previousButton);
 
         const nextButton = document.createElement('button');
         nextButton.id = 'nextButton';
         nextButton.classList.add('controls-button');
-        nextButton.innerHTML = 'Suivant <i class="fas fa-forward"></i>';
+        nextButton.innerHTML = '<i class="fas fa-forward"></i>';
         nextButton.addEventListener('click', playNextSong);
         audioPlayerDiv.appendChild(nextButton);
     }
