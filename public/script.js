@@ -347,7 +347,7 @@ async function loadPlaylistFromVercel(playlistId) {
         currentPlaylist = playlistData.playlist; // Met à jour la playlist actuellement chargée
         updateCurrentPlaylistDisplay(); // Met à jour l'affichage
         currentPlaylistName = playlistData.name; // Met à jour le nom de la playlist actuelle
-        alert(`Playlist "${playlistData.name}" chargée !`);
+        //alert(`Playlist "${playlistData.name}" chargée !`);
         // Passer à l'onglet "Playlist Actuelle" après le chargement
         document.querySelector('.tab-button[data-tab="current-playlist-section"]').click();
     } catch (error) {
