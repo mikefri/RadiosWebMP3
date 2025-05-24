@@ -199,9 +199,9 @@ function toggleShuffle() {
     if (shuffleButton) {
         shuffleButton.classList.toggle('active', isShuffleMode); // Ajoute/retire une classe 'active' pour le style
         if (isShuffleMode) {
-            alert('Lecture aléatoire activée !');
+            //alert('Lecture aléatoire activée !');
         } else {
-            alert('Lecture aléatoire désactivée.');
+            //alert('Lecture aléatoire désactivée.');
         }
     }
     // Si vous voulez remélanger la playlist affichée quand on active/désactive le shuffle
@@ -279,7 +279,7 @@ async function savePlaylistOnVercel() {
 
             const result = await response.json();
             if (response.ok && result.success) {
-                alert("Playlist sauvegardée sur Vercel !");
+                alert("Playlist sauvegardée !");
                 loadSavedPlaylistsFromVercel();
             } else {
                 throw new Error(result.message || `Erreur lors de la sauvegarde: ${response.status} ${response.statusText}`);
