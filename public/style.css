@@ -1,570 +1,338 @@
 /* style.css */
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Montserrat', sans-serif;
-    margin: 0;
-    background-color: #0f0c29;
-    background-image: radial-gradient(circle at top left, #0f0c29, #302b63, #24243e);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    color: white;
-    min-height: 100vh;
-    padding-top: 120px; /* Ajuster pour ne pas cacher le top-bar */
-    display: flex; /* Utiliser flexbox pour le corps */
-    flex-direction: column; /* Empiler les éléments verticalement */
-    align-items: center; /* Centrer le contenu horizontalement */
+  font-family: 'Montserrat', sans-serif;
+  margin: 0;
+  background-color: #0f0c29;
+  background-image: radial-gradient(circle at top left, #0f0c29, #302b63, #24243e);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: white;
+  min-height: 100vh;
+  padding-top: 120px; /* Ajuster pour ne pas cacher le top-bar */
 }
 
 .top-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: rgba(20, 20, 20, 0.8);
-    backdrop-filter: blur(15px);
-    padding: 20px;
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 20px rgba(0, 255, 255, 0.4);
-    width: 100%; /* S'assure qu'elle prend toute la largeur */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(20, 20, 20, 0.8);
+  backdrop-filter: blur(15px);
+  padding: 20px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 255, 255, 0.4);
 }
 
 h1 {
-    font-size: 2.8em;
-    margin: 0 0 10px;
-    background: linear-gradient(90deg, #00ffe0, #ff00ff, #00ffe0);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: neonText 3s linear infinite;
-    text-align: center; /* S'assurer que le titre est centré */
+  font-size: 2.8em;
+  margin: 0 0 10px;
+  background: linear-gradient(90deg, #00ffe0, #ff00ff, #00ffe0);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: neonText 3s linear infinite;
 }
 
 @keyframes neonText {
-    0% { background-position: 0% center; }
-    50% { background-position: 100% center; }
-    100% { background-position: 0% center; }
+  0% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+  100% { background-position: 0% center; }
 }
 
 .now-playing {
-    font-weight: bold;
-    font-size: 1.2em;
-    color: #00ffe0;
-    margin-bottom: 10px;
-    animation: pulse-now-playing 2s ease-in-out infinite;
-    transform-origin: center center;
-    text-align: center; /* Centrer le texte */
-    white-space: nowrap; /* Empêche le texte de passer à la ligne */
-    overflow: hidden; /* Cache le texte qui dépasse */
-    text-overflow: ellipsis; /* Ajoute "..." pour le texte caché */
-    max-width: 90%; /* Limiter la largeur pour les petits écrans */
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #00ffe0;
+  margin-bottom: 10px;
+  animation: pulse-now-playing 2s ease-in-out infinite; /* Nom de l'animation */
+  transform-origin: center center; /* S'assure que la mise à l'échelle se fait à partir du centre */
 }
 
 @keyframes pulse-now-playing {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1); /* Ajuste la valeur pour une pulsation plus ou moins forte */
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .audio-player {
-    margin-top: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(15px);
-    border: 2px solid rgba(0, 255, 255, 0.4);
-    border-radius: 20px;
-    padding: 15px 25px;
-    display: flex;
-    flex-direction: column; /* Empiler les éléments verticalement */
-    align-items: center; /* Centrer horizontalement */
-    gap: 15px; /* Espacement entre les éléments du lecteur */
-    max-width: 600px; /* Limite la largeur sur les grands écrans */
-    width: 90%; /* S'adapte à 90% de la largeur du parent */
-    box-shadow: 0 8px 30px rgba(0, 255, 255, 0.3);
+  margin-top: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(15px);
+  border: 2px solid rgba(0, 255, 255, 0.4);
+  border-radius: 20px;
+  padding: 15px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 8px 30px rgba(0, 255, 255, 0.3);
+  flex-direction: row; /* Changer pour aligner les boutons et l'audio en ligne */
+  align-items: center; /* Aligner verticalement les éléments */
 }
 
-.progress-container {
-    width: 100%; /* La barre de progression prend toute la largeur du player */
-    margin-top: 5px; /* Espacement au-dessus */
-    order: 1; /* Force la barre de progression à apparaître après l'audio, mais avant les boutons */
-}
-
-#progressBar {
-    width: 100%;
-    height: 8px;
-    -webkit-appearance: none;
-    background: #555;
-    border-radius: 5px;
-    outline: none;
-    cursor: pointer;
-}
-
-#progressBar::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 14px;
-    height: 14px;
-    background: #00ffe0;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-#progressBar::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    background: #00ffe0;
-    border-radius: 50%;
-    cursor: pointer;
-    border: none;
-}
-
-.time-display {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8em;
-    color: #aaa;
-    margin-top: 5px;
-}
-
-/* Cache l'élément audio natif de contrôles, car vous utilisez votre propre barre de progression */
 audio {
-    width: 100%;
-    max-width: 400px;
-    display: none; /* Cache les contrôles natifs de l'audio */
-}
-
-.controls-row {
-    display: flex;
-    justify-content: space-around; /* Espacement égal entre les boutons */
-    align-items: center;
-    width: 100%; /* Prend toute la largeur disponible */
-    order: 2; /* Force les contrôles à apparaître après la barre de progression */
+  width: 100%;
+  max-width: 400px;
+  flex-grow: 1; /* Permettre à l'audio de prendre l'espace entre les boutons */
+  max-width: none; /* Supprimer la limitation de largeur pour qu'il s'étende */
+  margin: 0 15px; /* Ajouter un peu de marge de chaque côté de l'audio */
 }
 
 .controls-button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.5em; /* Taille par défaut pour les icônes */
-    cursor: pointer;
-    transition: transform 0.3s ease;
-    padding: 8px 15px; /* Augmenter la zone cliquable */
-    white-space: nowrap; /* Empêche le texte des boutons de passer à la ligne */
-    display: flex; /* Permet d'aligner icône et texte si combinés */
-    align-items: center; /* Aligne verticalement */
-    justify-content: center; /* Centre horizontalement */
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5em;
+  cursor: pointer;
+  transition: transform 0.3s ease;
 }
-
-/* Correction pour les boutons Précédent/Suivant, s'ils sont ajoutés dynamiquement */
-/* Ces styles sont pour des boutons comme <button><i class="fas fa-backward"></i> Précédent</button> */
-.controls-button.icon-only { /* Ajoutez cette classe si c'est juste une icône */
-    font-size: 2em; /* Plus grande taille pour les icônes seules */
-    padding: 10px;
-}
-.controls-button i {
-    margin-right: 5px; /* Espacement entre icône et texte */
-}
-
 
 .controls-button:hover {
-    transform: scale(1.2);
+  transform: scale(1.2);
 }
 
-/* Conteneur principal pour le contenu en dessous du lecteur */
 .container {
-    max-width: 800px;
-    margin: 30px auto; /* Centrer le conteneur */
-    background-color: rgba(255, 255, 255, 0.05);
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    margin-top: 100px; /* Conserver une marge en haut pour le top-bar */
-    width: 95%; /* S'adapte à 95% de la largeur du parent */
-}
-
-.tab-container {
-    display: flex;
-    margin-bottom: 10px;
-    flex-wrap: wrap; /* Permet aux onglets et à la recherche de passer à la ligne */
-    gap: 10px; /* Espacement entre les éléments */
-    width: 100%; /* Prend toute la largeur disponible */
-}
-
-.tab-button {
-    padding: 10px 15px;
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Bordure plus claire */
-    background-color: rgba(255, 255, 255, 0.1); /* Fond semi-transparent */
-    color: white; /* Texte blanc */
-    cursor: pointer;
-    border-radius: 8px; /* Arrondir tous les coins par défaut */
-    font-size: 0.95em;
-    flex-grow: 1; /* Permet aux boutons de grandir pour occuper l'espace */
-    text-align: center; /* Centrer le texte dans les onglets */
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.tab-button.active {
-    background-color: rgba(0, 255, 255, 0.2); /* Fond actif légèrement différent */
-    border-color: #00ffe0; /* Bordure de la couleur du thème */
+  max-width: 800px;
+  margin: 30px auto;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  margin-top: 100px; /* Ajouter une marge en haut */
 }
 
 .search-bar {
-    margin-left: auto; /* Pousser la barre de recherche à droite sur grand écran */
-    margin-bottom: 0;
-    flex-basis: 100%; /* Sur mobile, la barre de recherche prend toute la largeur */
-    order: 1; /* La barre de recherche apparaît en dessous des onglets sur mobile */
+  margin-bottom: 20px;
 }
 
 .search-bar input[type="text"] {
-    padding: 10px; /* Ajuster un peu le padding pour s'aligner avec les onglets */
-    border: 1px solid rgba(0, 255, 255, 0.6);
-    border-radius: 8px; /* Coins arrondis */
-    font-size: 0.9em;
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    width: 100%; /* S'assure que l'input prend toute la largeur de son parent */
-    backdrop-filter: blur(10px);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 255, 255, 0.6);
+  font-size: 1em;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  width: 100%;
+  backdrop-filter: blur(10px);
 }
 
 .search-bar input[type="text"]::placeholder {
-    color: #aaa;
-}
-
-.tab-content {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 15px;
-    border-radius: 8px; /* Arrondir tous les coins */
-    width: 100%; /* S'assure que le contenu prend toute la largeur */
-    margin-top: 10px; /* Espacement entre les onglets/recherche et le contenu */
+  color: #aaa;
 }
 
 .playlist-section h2,
-.current-playlist-section h2,
-#savedPlaylistsSection h2 { /* Ajout de #savedPlaylistsSection h2 */
-    margin-top: 25px;
-    border-bottom: 2px solid rgba(0, 255, 255, 0.3);
-    padding-bottom: 10px;
-    color: #00ffe0;
-    font-size: 1.3em; /* Ajuster la taille du titre de section */
+.current-playlist-section h2 {
+  margin-top: 25px;
+  border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+  padding-bottom: 10px;
+  color: #00ffe0;
 }
 
 #playlist,
-#currentPlaylist,
-#savedPlaylistsList { /* Appliquer aux trois listes */
-    list-style: none;
-    padding: 0;
+#currentPlaylist {
+  list-style: none;
+  padding: 0;
 }
 
 #playlist li,
-#currentPlaylist li,
-#savedPlaylistsList li { /* Appliquer à tous les éléments de liste */
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap; /* Permettre le retour à la ligne pour le contenu de la liste */
+#currentPlaylist li {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 #playlist li:last-child,
-#currentPlaylist li:last-child,
-#savedPlaylistsList li:last-child {
-    border-bottom: none;
+#currentPlaylist li:last-child {
+  border-bottom: none;
 }
 
 #playlist li:hover,
-#currentPlaylist li:hover,
-#savedPlaylistsList li:hover {
-    background-color: rgba(0, 255, 255, 0.05);
+#currentPlaylist li:hover {
+  background-color: rgba(0, 255, 255, 0.05);
 }
 
-/* Conteneur pour le texte de la chanson et de l'artiste dans les listes */
-/* Ce style suppose que vous avez un span ou div contenant le titre ET l'artiste */
-.song-title-artist { /* Nouvelle classe à appliquer à l'élément contenant le titre et l'artiste */
-    flex-grow: 1; /* Permet au texte de prendre le maximum d'espace */
-    padding-right: 10px; /* Espace avant les icônes/boutons */
-    white-space: nowrap; /* Empêche le titre/artiste de passer à la ligne */
-    overflow: hidden; /* Cache le texte qui dépasse */
-    text-overflow: ellipsis; /* Ajoute "..." pour le texte caché */
-}
-
-/* Style pour les icônes (play, plus, delete) dans les listes */
-.list-item-icons { /* Nouvelle classe pour le conteneur des icônes */
-    display: flex;
-    gap: 10px; /* Espacement entre les icônes */
-    flex-shrink: 0; /* Empêche le conteneur d'icônes de rétrécir */
-    align-items: center;
-}
-.list-item-icons i { /* Pour les icônes elles-mêmes */
-    font-size: 1.2em;
-    cursor: pointer;
-    padding: 5px; /* Rendre les icônes plus faciles à cliquer */
-    transition: color 0.3s ease;
-}
-
-/* Exemples de couleurs d'icônes, à adapter */
-.list-item-icons .fa-play-circle { color: #00ffe0; }
-.list-item-icons .fa-plus-circle { color: #8bc34a; }
-.list-item-icons .fa-trash { color: #dc3545; }
-
-
-#currentPlaylist li button { /* Pour les boutons de suppression de la playlist actuelle */
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9em;
-    margin-left: 10px;
-    transition: background-color 0.3s ease;
-    flex-shrink: 0; /* Empêche le bouton de rétrécir */
+#currentPlaylist li button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  margin-left: 10px;
+  transition: background-color 0.3s ease;
 }
 
 #currentPlaylist li button:hover {
-    background-color: #c82333;
+  background-color: #c82333;
 }
-
-.playlist-actions {
-    display: flex;
-    justify-content: center; /* Centrer les boutons Sauvegarder/Charger */
-    gap: 15px; /* Espacement entre les boutons */
-    margin-bottom: 20px;
-    flex-wrap: wrap; /* Permet aux boutons de passer à la ligne */
-}
-
-.playlist-actions .controls-button { /* Utiliser la classe existante pour la cohérence */
-    font-size: 1em; /* Ajuster la taille pour ces boutons */
-    padding: 10px 20px;
-    border-radius: 8px;
-    background-color: rgba(0, 255, 255, 0.1);
-    border: 1px solid rgba(0, 255, 255, 0.4);
-    color: #00ffe0;
-}
-.playlist-actions .controls-button:hover {
-    background-color: rgba(0, 255, 255, 0.2);
-    transform: none; /* Pas de scale pour ces boutons si non désiré */
-}
-.playlist-actions .controls-button i {
-    margin-right: 8px;
-}
-
 
 footer {
-    text-align: center;
-    margin-top: 30px;
-    padding-top: 15px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    color: #aaa;
-    font-size: 0.9em;
-    width: 100%; /* S'assure qu'il prend toute la largeur */
-    padding-bottom: 20px; /* Espace en bas */
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #aaa;
+  font-size: 0.9em;
 }
 
-.playlist-bullet {
-    display: inline-block;
-    background-color: #3498db;
-    border-radius: 50%;
-    width: 8px;
-    height: 8px;
-    margin-right: 8px;
-    flex-shrink: 0;
+.progress-container {
+  width: 100%;
+  max-width: 400px; /* Limiter la largeur de la barre de progression */
+  margin-top: 10px; /* Espacement au-dessus du lecteur audio */
 }
 
-/* MEDIA QUERIES pour la réactivité */
+#progressBar {
+  width: 100%;
+  height: 8px;
+  -webkit-appearance: none;
+  background: #555;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+}
 
-/* Styles pour les petits écrans (smartphones en mode portrait) */
-@media (max-width: 767px) {
-    body {
-        padding-top: 100px; /* Réduire le padding-top pour les petits écrans */
-    }
+#progressBar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #00ffe0;
+  border-radius: 50%;
+  cursor: pointer;
+}
 
-    .top-bar {
-        padding: 15px 10px; /* Réduire le padding */
-    }
+#progressBar::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: #00ffe0;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
 
-    h1 {
-        font-size: 1.8em; /* Réduire la taille du titre */
-    }
+.time-display {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8em;
+  color: #aaa;
+  margin-top: 5px;
+}
 
-    .now-playing {
-        font-size: 0.9em; /* Réduire la taille du texte "Lecture en cours" */
-        max-width: 95%; /* Augmenter un peu la largeur */
-    }
+/* Style pour les icônes SVG des boutons précédent/suivant */
+.controls-button svg {
+  width: 24px;
+  height: 24px;
+  display: block; /* Empêcher les marges supplémentaires */
+}
 
-    .audio-player {
-        padding: 10px 15px; /* Réduire le padding */
-        gap: 10px; /* Réduire l'espacement entre les éléments */
-        width: 95%; /* Occupe plus de largeur */
-    }
-
-    .controls-button {
-        font-size: 1.2em; /* Réduire un peu la taille des boutons */
-        padding: 5px 10px;
-    }
-    .controls-button.icon-only {
-        font-size: 1.8em;
-    }
-
-    .container {
-        margin: 20px auto; /* Réduire la marge verticale */
-        padding: 15px; /* Réduire le padding */
-        width: 95%; /* Occupe plus de largeur */
-    }
-
-    .playlist-section h2,
-    .current-playlist-section h2,
-    #savedPlaylistsSection h2 {
-        font-size: 1.1em; /* Réduire la taille des titres de section */
-    }
-
-    .tab-container {
-        flex-direction: column; /* Empiler les onglets et la barre de recherche verticalement */
-        align-items: stretch; /* Les étirer pour prendre toute la largeur */
-        gap: 5px; /* Réduire l'espacement entre les éléments */
+/* Ajuster la marge du bouton shuffle pour l'alignement */
+#shuffleButton {
+  margin-left: auto; /* Pousser le bouton shuffle à droite */
+}
+.tab-container {
+      display: flex;
+      margin-bottom: 10px;
+      align-items: center; /* Aligner verticalement les onglets et la recherche */
     }
 
     .tab-button {
-        border-radius: 8px; /* Arrondir tous les coins */
-        margin-right: 0; /* Supprimer la marge droite */
-        flex-grow: 0; /* Ne pas les faire grandir excessivement */
-        width: 100%; /* Chaque bouton prend toute la largeur */
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+      cursor: pointer;
+      border-radius: 5px 5px 0 0;
+      font-size: 0.95em;
+      margin-right: 5px; /* Ajouter un peu d'espace entre les onglets et la recherche */
+    }
+
+    .tab-button.active {
+      background-color: #ddd;
     }
 
     .search-bar {
-        margin-left: 0; /* Supprimer la marge gauche */
-        order: 2; /* S'assure que la barre de recherche est toujours après les onglets */
-        width: 100%;
+      margin-left: auto; /* Pousser la barre de recherche à droite */
+      margin-bottom: 0; /* Supprimer la marge du bas car elle est maintenant dans le tab-container */
+    }
+
+    .search-bar input[type="text"] {
+      padding: 8px; /* Réduire un peu le padding pour s'aligner avec les onglets */
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 0.9em;
     }
 
     .tab-content {
-        border-radius: 8px; /* Arrondir tous les coins */
-        padding: 10px; /* Réduire le padding */
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 0 5px 5px 5px;
     }
 
-    #playlist li,
-    #currentPlaylist li,
-    #savedPlaylistsList li {
-        padding: 8px 0; /* Réduire le padding */
-        flex-direction: column; /* Empiler le texte et les icônes/boutons verticalement */
-        align-items: flex-start; /* Aligner le contenu à gauche */
-    }
 
-    .song-title-artist { /* Conteneur texte titre/artiste */
-        width: 100%; /* Prend toute la largeur disponible */
-        padding-right: 0;
-        margin-bottom: 5px; /* Espacement entre le texte et les icônes */
-    }
-
-    .list-item-icons { /* Conteneur des icônes de liste */
-        width: 100%; /* Les icônes prennent toute la largeur pour être centrées si désiré */
-        justify-content: flex-end; /* Aligner les icônes à droite en bas de l'élément de liste */
-        padding-top: 5px; /* Espacement au-dessus des icônes */
-        border-top: 1px solid rgba(255, 255, 255, 0.05); /* Petite ligne de séparation */
-    }
-    .list-item-icons i {
-        font-size: 1.1em; /* Légèrement plus petit sur mobile */
-    }
-
-    #currentPlaylist li button {
-        margin-left: 0; /* Supprimer la marge gauche */
-        width: 100%; /* Bouton prend toute la largeur */
-        margin-top: 5px; /* Espace au-dessus du bouton */
-    }
-
-    .playlist-actions {
-        flex-direction: column; /* Empiler les boutons Sauvegarder/Charger */
-        gap: 10px; /* Réduire l'espacement */
-    }
-    .playlist-actions .controls-button {
-        width: 100%; /* Chaque bouton prend toute la largeur */
-        text-align: center;
-    }
+#savedPlaylistsList li {
+  display: flex; /* Utiliser Flexbox pour l'alignement */
+  justify-content: space-between; /* Espacer le nom et l'icône */
+  align-items: center; /* Aligner verticalement au centre */
+  padding: 8px 0; /* Ajouter un peu de marge verticale */
 }
 
-/* Styles pour les écrans de taille moyenne (tablettes en mode portrait, petits ordinateurs) */
-@media (min-width: 768px) and (max-width: 1023px) {
-    h1 {
-        font-size: 2.5em;
-    }
 
-    .audio-player {
-        width: 80%; /* Un peu plus large que sur mobile */
-    }
-
-    .container {
-        width: 90%;
-    }
-
-    .tab-container {
-        /* Garder flex-direction: row; par défaut */
-        justify-content: space-between; /* Espacer les onglets et la recherche */
-    }
-
-    .tab-button {
-        flex-grow: 0; /* Ne pas les faire grandir */
-        width: auto; /* Largeur automatique */
-    }
-
-    .search-bar {
-        flex-basis: auto; /* Revenir à la largeur normale */
-        order: 0; /* Revenir à l'ordre normal */
-    }
-
-    /* Sur tablette, les titres peuvent être plus longs */
-    .now-playing,
-    .song-title-artist {
-        white-space: normal; /* Permet le retour à la ligne si besoin */
-        overflow: visible;
-        text-overflow: clip;
-        max-width: none; /* Enlève la limitation de largeur */
-    }
+#savedPlaylistsList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
 }
 
-/* Styles pour les grands écrans (ordinateurs de bureau) */
-@media (min-width: 1024px) {
-    /* Vous pouvez définir une largeur maximale plus grande pour le conteneur principal */
-    .container {
-        max-width: 960px; /* Ou plus, selon vos préférences */
-    }
+.playlist-bullet {
+  display: inline-block;
+  background-color: #3498db; /* Couleur de la puce */
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+}
 
-    .audio-player {
-        max-width: 700px; /* Ou plus */
-    }
 
-    /* Exemple d'une mise en page à deux colonnes pour le bureau */
-    /* Cela nécessiterait d'envelopper votre .audio-player et votre .container dans un nouveau div, par exemple <div class="main-content-wrapper"> */
-    /*
-    .main-content-wrapper {
-        display: flex;
-        max-width: 1200px;
-        margin: 30px auto;
-        gap: 30px;
-        padding: 0 20px;
-        align-items: flex-start; // Aligne les éléments en haut
-    }
 
-    .player-column { // Pour le lecteur audio et le titre en cours
-        flex: 2;
-        max-width: 700px;
-    }
+/* Style pour que le nom de la playlist occupe l'espace entre la puce et l'icône */
+#savedPlaylistsList li > span:nth-child(2) {
+  flex-grow: 1;
+  cursor: pointer; /* Indiquer que le nom est cliquable */
+}
+.song-item {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  cursor: pointer;
+  justify-content: flex-start; /* Ajout de flex-start */
+}
 
-    .playlist-column { // Pour le .container entier
-        flex: 1;
-        max-width: 400px;
-    }
 
-    .container {
-        margin: 0; // Supprimer les marges automatiques si dans une colonne flex
-    }
-    */
+
+.song-item span {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
 }
