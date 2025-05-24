@@ -1,114 +1,76 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <title>MP3 - RadiosWeb</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-</head>
+  <meta charset="UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <title>MP3 - RadiosWeb</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  </head>
 <body>
-    <div class="top-bar">
-        <h1>🎧 MP3 - RadiosWeb</h1>
-        <div id="currentSongTitle" class="now-playing"></div>
-        <div class="audio-player">
-            <audio id="audioPlayer" controls></audio> 
-            
-            <div class="progress-container">
-                <input type="range" id="progressBar" value="0" min="0" max="100">
-                <div class="time-display">
-                    <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
-                </div>
-            </div>
-            
-            <div class="controls-row">
-                <button id="prevButton" class="controls-button icon-only" title="Chanson précédente">
-                    <i class="fas fa-backward"></i>
-                </button>
-                <button id="shuffleButton" class="controls-button" title="Activer/Désactiver la lecture aléatoire">
-                    <i class="fas fa-random"></i> Lecture Aléatoire
-                </button>
-                <button id="nextButton" class="controls-button icon-only" title="Chanson suivante">
-                    <i class="fas fa-forward"></i>
-                </button>
-            </div>
+  <div class="top-bar">
+    <h1>🎧 MP3 - RadiosWeb</h1>
+    <div id="currentSongTitle" class="now-playing"></div>
+    <div class="audio-player">
+      <audio id="audioPlayer" controls></audio>
+      <div class="progress-container">
+        <input type="range" id="progressBar" value="0" min="0" max="100">
+        <div class="time-display">
+          <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
         </div>
+      </div>
+      <button id="shuffleButton" class="controls-button">Lecture Aléatoire</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="tab-container">
+      <button class="tab-button active" data-tab="playlist-section">Liste des Chansons</button>
+      <button class="tab-button" data-tab="current-playlist-section">Playlist Actuelle</button>
+      <section class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search un titre, un artiste...">
+      </section>
     </div>
 
-    <div class="container">
-        <div class="tab-container">
-            <button class="tab-button active" data-tab="playlist-section">Liste des Chansons</button>
-            <button class="tab-button" data-tab="current-playlist-section">Playlist Actuelle</button>
-            <section class="search-bar">
-                <input type="text" id="searchInput" placeholder="Rechercher un titre, un artiste...">
-            </section>
-        </div>
+    <section id="playlist-section" class="tab-content">
+      <h2>Liste des Chansons</h2>
+      <ul id="playlist">
+      </ul>
+    </section>
 
-        <section id="playlist-section" class="tab-content">
-            <h2>Liste des Chansons</h2>
-            <ul id="playlist">
-                <li>
-                    <span class="song-title-artist">Titre de la Chanson 1 - Artiste A</span>
-                    <div class="list-item-icons">
-                        <i class="fas fa-plus-circle add-to-playlist-icon" title="Ajouter à la playlist actuelle"></i>
-                        <i class="fas fa-play-circle play-song-icon" title="Écouter cette chanson"></i>
-                    </div>
-                </li>
-                <li>
-                    <span class="song-title-artist">Titre de la Chanson 2 TRES LONG POUR TESTER LE TRUNCATE - Artiste B Avec Un Nom Egalement Tres Long</span>
-                    <div class="list-item-icons">
-                        <i class="fas fa-plus-circle add-to-playlist-icon" title="Ajouter à la playlist actuelle"></i>
-                        <i class="fas fa-play-circle play-song-icon" title="Écouter cette chanson"></i>
-                    </div>
-                </li>
-                </ul>
-        </section>
+    <section id="current-playlist-section" class="tab-content">
+      <h2>Playlist Actuelle</h2>
+      <div class="playlist-actions">
+        <button id="savePlaylistButton" class="controls-button" title="Sauvegarder la Playlist">
+          <i class="fa fa-save" style="color:#ac22d3; margin-right: 6px;"></i>
+          Sauvegarder
+        </button>
+        <button id="loadPlaylistsButton" class="controls-button" title="Charger les Playlists">
+          <i class="fa fa-folder-open" style="color:#ac22d3; margin-right: 6px;"></i>
+          Charger
+        </button>
 
-        <section id="current-playlist-section" class="tab-content">
-            <h2>Playlist Actuelle</h2>
-            <div class="playlist-actions">
-                <button id="savePlaylistButton" class="controls-button" title="Sauvegarder la Playlist">
-                    <i class="fa fa-save" style="color:#ac22d3; margin-right: 6px;"></i>
-                    Sauvegarder
-                </button>
-                <button id="loadPlaylistsButton" class="controls-button" title="Charger les Playlists">
-                    <i class="fa fa-folder-open" style="color:#ac22d3; margin-right: 6px;"></i>
-                    Charger
-                </button>
-            </div>
-            <ul id="currentPlaylist">
-                <li>
-                    <span class="song-title-artist">Titre de la Chanson Actuelle - Artiste Z</span>
-                    <div class="list-item-icons">
-                        <i class="fas fa-trash delete-song-icon" title="Supprimer de la playlist"></i>
-                        <i class="fas fa-play-circle play-song-icon" title="Écouter cette chanson"></i>
-                    </div>
-                </li>
-            </ul>
-            <section id="savedPlaylistsSection" style="display: none;">
-                <h2>Playlists Sauvegardées</h2>
-                <ul id="savedPlaylistsList">
-                    <li>
-                        <span class="playlist-bullet"></span>
-                        <span class="song-title-artist">Ma Playlist Préférée de 2024</span>
-                        <div class="list-item-icons">
-                            <i class="fas fa-folder-open load-saved-playlist-icon" title="Charger cette playlist"></i>
-                            <i class="fas fa-trash delete-saved-playlist-icon" title="Supprimer cette playlist"></i>
-                        </div>
-                    </li>
-                </ul>
-            </section>
-        </section>
 
-        <footer>
-            <p>&copy; 2025 Fait avec ❤️ par Micfri</p>
-        </footer>
-    </div>
-    <script src="script.js"></script> 
+      </div>
+      <ul id="currentPlaylist">
+      </ul>
+      <section id="savedPlaylistsSection" style="display: none;">
+        <h2>Playlists Sauvegardées</h2>
+        <ul id="savedPlaylistsList">
+        </ul>
+      </section>
+    </section>
+
+    <footer>
+      <p>&copy; 2025 Fait avec ❤️ par Micfri</p>
+    </footer>
+  </div>
+  <script src="script.js"></script> 
 </body>
 </html>
