@@ -163,7 +163,7 @@ function shufflePlaylist() {
     }
     currentSongIndex = -1; // Réinitialise l'index après le mélange
     updateCurrentPlaylistDisplay();
-    alert('Playlist mélangée !');
+    //alert('Playlist mélangée !');
 }
 
 // Fonction de recherche de chansons
