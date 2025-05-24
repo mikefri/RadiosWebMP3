@@ -106,7 +106,7 @@ function updateCurrentPlaylistDisplay() {
             </div>
             <div class="song-actions">
                 <span class="play-current" data-index="${index}" title="Jouer"><i class="fas fa-play-circle"></i></span>
-                <span class="remove-from-playlist" data-index="${index}" title="Supprimer de la playlist"><i class="fas fa-minus-circle"></i></span>
+                <span class="remove-from-playlist" data-index="${index}" title="Supprimer de la playlist"><i class="fas fa-minus-circle" style="color: red;"></i></span>
             </div>
         `;
         // Surligne la chanson en cours de lecture
