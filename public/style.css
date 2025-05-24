@@ -298,25 +298,7 @@ footer {
   padding: 8px 0; /* Ajouter un peu de marge verticale */
 }
 
-.delete-icon {
-  /* Les styles existants pour l'icône restent les mêmes */
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  background-color: red;
-  color: white;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  user-select: none;
-}
 
-.delete-icon::before {
-  content: "−"; /* Caractère moins Unicode */
-}
 #savedPlaylistsList li {
   display: flex;
   justify-content: space-between;
