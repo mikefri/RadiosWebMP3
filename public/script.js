@@ -592,7 +592,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Variables globales pour le casting
 let currentCastSession = null;
-const audioPlayer = document.getElementById('audioPlayer'); // Récupération de votre lecteur audio
+//const audioPlayer = document.getElementById('audioPlayer'); // Récupération de votre lecteur audio
 const castButton = document.getElementById('castButton'); // Le bouton Cast que nous avons ajouté
 
 // --- 1. Initialisation du framework Cast ---
