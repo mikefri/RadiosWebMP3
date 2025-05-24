@@ -586,3 +586,179 @@ document.addEventListener('DOMContentLoaded', () => {
         defaultTabButton.click();
     }
 });
+
+
+// --- DÉBUT DU CODE CASTING ---
+
+// Variables globales pour le casting
+let currentCastSession = null;
+const audioPlayer = document.getElementById('audioPlayer'); // Récupération de votre lecteur audio
+const castButton = document.getElementById('castButton'); // Le bouton Cast que nous avons ajouté
+
+// --- 1. Initialisation du framework Cast ---
+// Cette fonction est appelée par le SDK Google Cast une fois qu'il est prêt.
+window['__onGCastApiAvailable'] = function(isAvailable) {
+    if (isAvailable) {
+        initializeCastApi();
+    } else {
+        console.error('Google Cast API non disponible.');
+        // Vous pouvez cacher le bouton de cast si l'API n'est pas disponible du tout
+        castButton.style.display = 'none';
+    }
+};
+
+function initializeCastApi() {
+    cast.framework.CastContext.getInstance().setOptions({
+        // Utilise le récepteur média par défaut de Google.
+        // Cela signifie que vous n'avez pas besoin de créer votre propre application réceptrice.
+        receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+        autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+    });
+
+    const castContext = cast.framework.CastContext.getInstance();
+
+    // 2. Écouteurs d'événements pour l'état du Cast
+    castContext.addEventListener(
+        cast.framework.CastContextEventType.CAST_STATE_CHANGED,
+        (event) => {
+            console.log('Cast State Changed:', event.castState);
+            if (event.castState === cast.framework.CastState.NOT_CONNECTED) {
+                // Pas connecté, montrer le bouton si des appareils sont disponibles
+                if (castContext.getCastState() === cast.framework.CastState.NO_DEVICES_AVAILABLE) {
+                    castButton.style.display = 'none'; // Aucun appareil, cacher le bouton
+                } else {
+                    castButton.style.display = 'inline-block'; // Appareils disponibles, montrer le bouton
+                }
+                castButton.classList.remove('connected'); // Retirer la classe de connexion
+            } else if (event.castState === cast.framework.CastState.CONNECTED) {
+                // Connecté à un appareil Cast
+                castButton.style.display = 'inline-block'; // S'assurer que le bouton est visible
+                castButton.classList.add('connected'); // Ajouter une classe pour le style visuel
+                currentCastSession = castContext.getCurrentSession();
+                console.log('Connecté à un appareil Cast ! Session:', currentCastSession);
+
+                // Si le média était déjà en cours sur le navigateur, le lancer sur Cast
+                if (!audioPlayer.paused && audioPlayer.src) {
+                    loadMediaOnCast(audioPlayer.src, audioPlayer.currentTime);
+                }
+            } else if (event.castState === cast.framework.CastState.CONNECTING) {
+                // En cours de connexion
+                castButton.style.display = 'inline-block';
+                castButton.classList.add('connecting'); // Vous pouvez ajouter un style pour "connecting"
+            }
+        }
+    );
+
+    // Écouteur d'événements pour les changements de session (début/fin de session)
+    castContext.addEventListener(
+        cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
+        (event) => {
+            if (event.sessionState === cast.framework.SessionState.SESSION_ENDED) {
+                console.log('Session Cast terminée.');
+                currentCastSession = null;
+                // Si le média était casté, reprendre la lecture sur le lecteur local
+                if (!audioPlayer.src) { // Si aucune source, ne pas tenter de jouer
+                    return;
+                }
+                // Si le lecteur était en pause AVANT le cast, il doit rester en pause.
+                // Sinon, reprendre la lecture.
+                if (audioPlayer.dataset.wasPlayingBeforeCast === 'true') {
+                     audioPlayer.play();
+                }
+                delete audioPlayer.dataset.wasPlayingBeforeCast; // Nettoyer le drapeau
+            } else if (event.sessionState === cast.framework.SessionState.SESSION_STARTED) {
+                console.log('Nouvelle session Cast démarrée.');
+                currentCastSession = castContext.getCurrentSession();
+            }
+        }
+    );
+
+    // Le SDK va automatiquement transformer l'élément avec l'ID 'castButton'
+    // en un véritable bouton Cast. Nous devons juste nous assurer qu'il est là.
+    // L'icône est gérée par le SDK par défaut.
+}
+
+// 3. Fonction pour charger et lire le média sur l'appareil Cast
+function loadMediaOnCast(mediaUrl, startTime = 0) {
+    if (!currentCastSession) {
+        console.error('Pas de session Cast active pour charger le média.');
+        return;
+    }
+
+    if (!mediaUrl) {
+        console.error('URL du média vide, impossible de caster.');
+        return;
+    }
+
+    const mediaInfo = new chrome.cast.media.MediaInfo(mediaUrl, 'audio/mpeg');
+    const request = new chrome.cast.media.LoadRequest(mediaInfo);
+
+    request.autoplay = true; // Lire automatiquement sur l'appareil Cast
+    request.currentTime = startTime; // Démarrer à la position actuelle du lecteur local
+
+    currentCastSession.loadMedia(request).then(
+        function() {
+            console.log('Média chargé et en cours de lecture sur Cast !');
+            // Mettre en pause la lecture sur le lecteur local
+            // et marquer qu'il était en lecture avant le cast
+            if (!audioPlayer.paused) {
+                audioPlayer.dataset.wasPlayingBeforeCast = 'true';
+                audioPlayer.pause();
+            } else {
+                 audioPlayer.dataset.wasPlayingBeforeCast = 'false';
+            }
+        },
+        function(errorCode) {
+            console.error('Erreur lors du chargement du média sur Cast:', errorCode);
+            // Si erreur, on peut vouloir reprendre la lecture localement
+            if (audioPlayer.dataset.wasPlayingBeforeCast === 'true') {
+                 audioPlayer.play();
+            }
+            delete audioPlayer.dataset.wasPlayingBeforeCast;
+        }
+    );
+}
+
+// 4. Intégrer la logique Cast avec vos contrôles existants
+// Quand votre lecteur audio HTML5 commence à jouer...
+audioPlayer.addEventListener('play', function() {
+    // Si une session Cast est active ET qu'aucun média n'est déjà en cours sur Cast (ou que c'est un nouveau média)
+    // On lance le média sur Cast.
+    if (currentCastSession && currentCastSession.getMediaSession() === null || 
+        (currentCastSession && currentCastSession.getMediaSession() && currentCastSession.getMediaSession().media.contentId !== audioPlayer.src)
+    ) {
+        loadMediaOnCast(audioPlayer.src, audioPlayer.currentTime);
+    } else if (currentCastSession && currentCastSession.getMediaSession()) {
+        // Si un média est déjà en cours sur Cast, commander la lecture/reprise via Cast
+        currentCastSession.getMediaSession().play();
+        // Mettre en pause le lecteur local pour éviter la double lecture
+        audioPlayer.pause();
+    }
+    // else: pas de session Cast, le lecteur HTML5 continue à jouer normalement
+});
+
+// Quand votre lecteur audio HTML5 est mis en pause...
+audioPlayer.addEventListener('pause', function() {
+    if (currentCastSession && currentCastSession.getMediaSession()) {
+        // Si un média est en cours sur Cast, commander la pause via Cast
+        currentCastSession.getMediaSession().pause();
+    }
+});
+
+// Quand la source de votre lecteur change (par exemple, chanson suivante/précédente)
+// Vous devrez vous assurer que votre logique de "nextButton" et "prevButton"
+// met à jour `audioPlayer.src` et `audioPlayer.load()`.
+// Cet écouteur s'assurera que si la source change pendant le casting,
+// le nouveau média soit envoyé au Chromecast.
+audioPlayer.addEventListener('loadeddata', function() {
+    if (currentCastSession) {
+        // Si un nouveau morceau est chargé et que nous sommes en session Cast,
+        // nous voulons que le nouveau morceau soit casté.
+        // On vérifie si le média actuellement casté est différent de la nouvelle source.
+        if (currentCastSession.getMediaSession() && currentCastSession.getMediaSession().media.contentId !== audioPlayer.src) {
+             loadMediaOnCast(audioPlayer.src, 0); // Recommencer à 0 pour le nouveau morceau
+        }
+    }
+});
+
+// --- FIN DU CODE CASTING ---
