@@ -289,21 +289,7 @@ footer {
       padding: 15px;
       border-radius: 0 5px 5px 5px;
     }
-.delete-icon {
-  display: inline-flex; /* Pour centrer le contenu (le moins) */
-  justify-content: center;
-  align-items: center;
-  background-color: red;
-  color: white;
-  border-radius: 50%; /* Pour créer un cercle */
-  width: 20px; /* Ajustez la taille selon vos besoins */
-  height: 20px; /* Ajustez la taille selon vos besoins */
-  font-size: 14px; /* Taille du signe moins */
-  font-weight: bold;
-  cursor: pointer;
-  margin-left: 8px; /* Espacement entre le nom de la playlist et l'icône */
-  user-select: none; /* Empêche la sélection de texte de l'icône */
-}
+
 
 #savedPlaylistsList li {
   display: flex; /* Utiliser Flexbox pour l'alignement */
