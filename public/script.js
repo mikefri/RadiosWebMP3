@@ -25,7 +25,7 @@ let isShuffleMode = false;
 
 async function loadSongs() {
     try {
-        const response = await fetch('https://radioswebmp3.synology.me/musique/audios-list.json');
+        const response = await fetch('https://drive.google.com/uc?id=13Pwxjlw9j5gqTuHdi5oDYaS_8cpOy0ye');
         if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status} - Échec du chargement de audios-list.json`);
         }
