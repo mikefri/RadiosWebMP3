@@ -25,7 +25,7 @@ let isShuffleMode = false;
 
 async function loadSongs() {
     try {
-        const response = await fetch('https://drive.google.com/uc?id=13Pwxjlw9j5gqTuHdi5oDYaS_8cpOy0ye');
+        const response = await fetch('https://mikefri.github.io/ma-playlist/audios-list.json');
         if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status} - Échec du chargement de audios-list.json`);
         }
@@ -40,7 +40,7 @@ async function loadSongs() {
         displayAllSongs();
     } catch (error) {
         console.error('Erreur lors du chargement des chansons:', error);
-        alert('Impossible de charger la liste des chansons depuis google. Vérifiez l\'URL et votre réseau.');
+        alert('Impossible de charger la liste des chansons depuis git. Vérifiez l\'URL et votre réseau.');
     }
 }
 
