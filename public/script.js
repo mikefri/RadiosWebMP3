@@ -40,7 +40,7 @@ async function loadSongs() {
         displayAllSongs();
     } catch (error) {
         console.error('Erreur lors du chargement des chansons:', error);
-        alert('Impossible de charger la liste des chansons depuis Synology. Vérifiez l\'URL et votre réseau.');
+        alert('Impossible de charger la liste des chansons depuis google. Vérifiez l\'URL et votre réseau.');
     }
 }
 
