@@ -22,10 +22,12 @@ let currentPlaylistName = null;
 let isShuffleMode = false;
 
 // --- Fonctions de base du lecteur audio et de la gestion locale ---
+//https://raw.githubusercontent.com/mikefri/RadiosWebMP3/main/public/audio_list.json
+//https://mikefri.github.io/ma-playlist/audios-list.json
 
 async function loadSongs() {
     try {
-        const response = await fetch('https://mikefri.github.io/ma-playlist/audios-list.json');
+        const response = await fetch('https://raw.githubusercontent.com/mikefri/RadiosWebMP3/main/public/audio_list.json');
         if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status} - Échec du chargement de audios-list.json`);
         }
