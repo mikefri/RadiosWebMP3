@@ -27,7 +27,7 @@ let isShuffleMode = false;
 
 async function loadSongs() {
     try {
-        const response = await fetch('https://raw.githubusercontent.com/mikefri/RadiosWebMP3/main/public/audio_list.json');
+        const response = await fetch('https://mikefri.github.io/ma-playlist/audios-list.json');
         if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status} - Échec du chargement de audios-list.json`);
         }
